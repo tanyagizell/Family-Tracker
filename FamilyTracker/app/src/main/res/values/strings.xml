@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FamilyTracker</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="Log">Log</string>
+    <string name="WelcomeUser">Welcome User!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_fthome_page">FTHomePageActivity</string>
+    <string name="title_activity_ftlog">FTLogActivity</string>
+    <string name="title_activity_ftfamily_member">FTFamilyMemberActivity</string>
+    <string name="title_activity_ftfamily_locations">FTFamilyLocationsActivity</string>
+</resources>
