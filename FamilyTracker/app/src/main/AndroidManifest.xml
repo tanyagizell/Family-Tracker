@@ -10,11 +10,7 @@
         <activity
             android:name=".FTWelcomeActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".FTHomePageActivity"
@@ -32,6 +28,25 @@ zz
         <activity
             android:name=".FTFamilyLocationsActivity"
             android:label="@string/title_activity_ftfamily_locations" >
+        </activity>
+
+        <service
+            android:name=".FTGeofenceListenerService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".FTAlertListenerService"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".FTLocationActivity"
+            android:label="@string/title_activity_ftlocation" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

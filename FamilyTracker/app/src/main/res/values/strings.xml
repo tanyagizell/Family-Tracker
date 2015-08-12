@@ -10,4 +10,17 @@
     <string name="title_activity_ftlog">FTLogActivity</string>
     <string name="title_activity_ftfamily_member">FTFamilyMemberActivity</string>
     <string name="title_activity_ftfamily_locations">FTFamilyLocationsActivity</string>
+    <string name="title_activity_ftlocation">FTLocationActivity</string>
+
+    <!-- Home page activity -->
+    <string name="Myfamilies">Families</string>
+
+
+    <!-- Location Activity -->
+    <string name="address_text">Address</string>
+    <string name="followers_text">Followers</string>
+
+
+
+
 </resources>
