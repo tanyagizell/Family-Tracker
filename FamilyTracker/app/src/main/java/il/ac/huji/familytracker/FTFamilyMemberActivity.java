@@ -33,6 +33,8 @@ public class FTFamilyMemberActivity extends ActionBarActivity {
 
     private FamilyMember _currentMember;
     private Boolean m_blnIsEditMode;
+
+    private String m_strMemberExtraKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +52,22 @@ public class FTFamilyMemberActivity extends ActionBarActivity {
         _txtHeader = (TextView) findViewById(R.id.Member_Activity_Header);
         _lnrlytNameInputSection = (LinearLayout) findViewById(R.id.Name_Edit_Section);
         Intent intntCurrActivity = getIntent();
-        m_blnIsEditMode = intntCurrActivity.getBooleanExtra("IsFirstCreated", true);
+        m_blnIsEditMode = intntCurrActivity.getBooleanExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
+        m_strMemberExtraKey = (String) getResources().getText(R.string.Extras_Key_Current_Member);
+        if (intntCurrActivity.hasExtra(m_strMemberExtraKey)) {
+            _currentMember = intntCurrActivity.getParcelableExtra(m_strMemberExtraKey);
+            setExistingDataIntoView();
+        } else {
+            _currentMember = new FamilyMember();
+        }
         SetActivityState();
 
+    }
+
+    private void setExistingDataIntoView() {
+        _edtName.setText(_currentMember.getName());
+        _edtEMail.setText(_currentMember.getEmail());
+        _edtNumber.setText(_currentMember.getPhoneNumber());
     }
 
     private void SetActivityState() {

@@ -26,5 +26,7 @@
     <string name="Phone_Label_Content">Phone Number</string>
     <string name="Email_Label_Content">Email Address</string>
     <string name="Edit_Mode_Header">edit member data</string>
+    <string name="Extras_Key_Is_Edit_Mode">IsEditMode</string>
+    <string name="Extras_Key_Current_Member">CurrMember</string>
 
 </resources>
