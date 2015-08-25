@@ -10,10 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+
 import java.util.ArrayList;
 import java.util.Locale;
 
-
+import com.parse.ParseAnalytics;
 /*
 * FTLocationActivity
 *
@@ -66,6 +67,13 @@ public class FTLocationActivity extends ActionBarActivity {
                 Uri uri = Uri.parse(uriString);
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
                 startActivity(intent);
+//
+//            // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
+////                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+//// Make the Intent explicit by setting the Google Maps package
+//                mapIntent.setPackage("com.google.android.apps.maps");
+
+
             }
         });
 
