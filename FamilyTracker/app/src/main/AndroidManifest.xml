@@ -19,13 +19,20 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <!--
-      IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
-      to match your app's package name + ".permission.C2D_MESSAGE".
-    -->
     <permission android:protectionLevel="signature"
         android:name="il.ac.huji.familytracker.permission.C2D_MESSAGE" />
     <uses-permission android:name="il.ac.huji.familytracker.permission.C2D_MESSAGE" />
+
+    <!-- Google play permissions-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -94,6 +101,10 @@ zz
         <activity
             android:name=".FTMapsActivity"
             android:label="@string/title_activity_ftmaps" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="il.ac.huji.familytracker.FTLocationActivity"/>
+
         </activity>
 
         <service android:name="com.parse.PushService" />

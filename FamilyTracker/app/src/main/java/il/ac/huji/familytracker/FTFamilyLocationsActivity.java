@@ -11,6 +11,13 @@ import java.util.ArrayList;
 
 public class FTFamilyLocationsActivity extends ActionBarActivity {
 
+
+    /*********************
+     ***** Globals ******
+     ********************/
+    public static final String EXTRA_MESSAGE = "il.ac.huji.familytracker.MESSAGE";
+
+
     //TODO manage DB
 
     ArrayList<FTLocation> _locations;

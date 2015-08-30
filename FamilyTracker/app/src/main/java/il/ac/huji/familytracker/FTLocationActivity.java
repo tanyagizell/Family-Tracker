@@ -1,19 +1,27 @@
 package il.ac.huji.familytracker;
 
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseAnalytics;
 /*
 * FTLocationActivity
@@ -25,18 +33,35 @@ import com.parse.ParseAnalytics;
 public class FTLocationActivity extends ActionBarActivity {
 
     /*********************
+     ***** constants ******
+     ********************/
+    public static final String EXTRA_MESSAGE= "il.ac.huji.familytracker.MESSAGE";
+    public static final String TAG = "FTLocationActivity";
+
+    /*********************
      ***** Globals ******
      ********************/
 
 
-    //Widgets
+    /*********************
+     ***** Widgets ******
+     ********************/
     Button addBtn; //adding new followers
     Button mapViewBtn; //Button to open map view for the location
+    Button searchBtn;
+    EditText edtTxt;
 
     ListView followerListView; //list view for the locations followers
+    int locationID;
 
-    //variables
+    /**********************
+     ***** Variables ******
+     **********************/
+    //followers list
     ArrayList<String> followersList;
+    //address
+    String addrName;
+    LatLng addrLatLng;
 
 
 
@@ -47,7 +72,13 @@ public class FTLocationActivity extends ActionBarActivity {
 
         //TODO read followers from db
 
+        //get location ID from locations activity
+//        Intent intent = getIntent();
+//        String message = intent.getStringExtra(FTFamilyLocationsActivity.EXTRA_MESSAGE);
+//        int locID = Integer.valueOf(message);
+
         followersList = new ArrayList<String>();
+
 
         /*** Widgets ***/
 
@@ -56,38 +87,41 @@ public class FTLocationActivity extends ActionBarActivity {
         mapViewBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                //TODO resolve URI
-                double latitude = 40.714728;
-                double longitude = -73.998672;
-                String label = "ABC Label";
-                String uriBegin = "geo:" + latitude + "," + longitude;
-                String query = latitude + "," + longitude + "(" + label + ")";
-                String encodedQuery = Uri.encode(query);
-                String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-                Uri uri = Uri.parse(uriString);
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-//
-//            // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
-////                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-//// Make the Intent explicit by setting the Google Maps package
-//                mapIntent.setPackage("com.google.android.apps.maps");
+//                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+//                startActivity(intent);
 
-
+                openMap(v);
             }
         });
 
 
         //add button
-//        addBtn = (Button) findViewById(R.id.mapViewButton);
-//        addBtn.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//
-//                //TODO Add a follower
-//            }
-//        });
+        addBtn = (Button) findViewById(R.id.addFollowerBtn);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                showDialog(v);
+                //TODO Add a follower
+            }
+        });
+
+        //address text text
+        edtTxt = (EditText) findViewById(R.id.editAddr);
+
+        //search Btn
+        searchBtn = (Button) findViewById(R.id.SrchBtn);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                String addr = edtTxt.getText().toString();
+                getLocationFromAddress(addr);
+            }
+        });
+
 
     }
+
+
 
 
     @Override
@@ -111,4 +145,78 @@ public class FTLocationActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void showDialog(View v){
+        FragmentManager manager = getFragmentManager();
+
+        FTDialogFragment df = new FTDialogFragment().getInstance();
+//        df.setOnItemClickListener(listener);
+        Fragment fr = getSupportFragmentManager().findFragmentByTag(FTDialogFragment.TAG);
+        if (fr == null) {
+            df.show(manager, FTDialogFragment.TAG);
+        }
+    }
+
+    public void openMap (View view){
+
+        //Todo query database
+
+        //TODO resolve URI
+        double latitude = 40.714728;
+        double longitude = -73.998672;
+
+        String message =latitude + "," + longitude;
+        Intent intent = new Intent(this, FTMapsActivity.class);
+        intent.putExtra(EXTRA_MESSAGE,message);
+        startActivity(intent);
+    }
+
+
+    /*Name: addFollower
+     * Add a new member to this locations list of followers
+     */
+    public void addFollower(){
+        //TODO open a dialog to display all family members and choose one from the list
+
+    }
+
+    public ArrayList<String> getFamilyMembers(){
+        ArrayList<String> members =  new ArrayList<String>();
+        return members;
+        //TODO get family members from the data base
+    }
+
+    /*
+    * Name: getLocationFromAddress
+    *
+    * */
+    public LatLng getLocationFromAddress(String strAddress) {
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        LatLng latLng = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+            Address location = address.get(0);
+            String lat = "" + location.getLatitude();
+            String lng = "" + location.getLongitude();
+
+            latLng = new LatLng(location.getLatitude(), location.getLongitude() );
+
+            Log.v(lat, TAG);
+            Log.v(lng, TAG);
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
+        }
+
+        return latLng;
+    }
+
 }
+

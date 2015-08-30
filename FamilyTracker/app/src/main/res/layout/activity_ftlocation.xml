@@ -7,11 +7,6 @@
     tools:context="il.ac.huji.familytracker.FTLocationActivity"
     android:orientation="vertical">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="20dp"
-    />
 
 
 
@@ -28,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:id="@+id/editText"
+            android:id="@+id/editAddr"
             android:text="@string/address_text"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/textView"
@@ -44,32 +39,42 @@
             android:id="@+id/mapViewButton"
         />
 
-        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:text="Search"
+        android:id="@+id/SrchBtn"
+    />
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/followers_text"
-            android:paddingTop="20dp"
-            android:textSize="20dp"
-        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/followers_text"
+        android:paddingTop="20dp"
+        android:textSize="20dp"
+    />
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="5">
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="5">
 
-        </ListView>
+    </ListView>
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="+"
-            android:textAlignment="center"
-            android:textSize="40dp"
-        />
+    <Button
+        android:id="@+id/addFollowerBtn"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="+"
+        android:textAlignment="center"
+        android:textSize="40dp"
+
+    />
 
 
 
