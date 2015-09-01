@@ -9,11 +9,13 @@ import java.util.ArrayList;
  ****************************************************************************************/
 public class Family {
 
-    String _familyName;
     ArrayList<FamilyMember> _familyMembers;
+    private String _familyName;
+    private int _DBFamilyID;
 
-    public Family(String name){
+    public Family(String name, int id) {
         _familyName = name;
+        _DBFamilyID = id;
     }
 
 

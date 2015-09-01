@@ -3,19 +3,11 @@ package il.ac.huji.familytracker;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
- * Created by Tanyagizell on 23/07/2015.
- *
- * This class represents a family member object
- *
+ * Created by Omer on 30/08/2015.
  */
 public class FamilyMember implements Parcelable {
-
-
-    public static final Parcelable.Creator<FamilyMember> CREATOR = new Creator<FamilyMember>() {
+    public static final Parcelable.Creator<FamilyMember> CREATOR = new Parcelable.Creator<FamilyMember>() {
         @Override
         public FamilyMember createFromParcel(Parcel source) {
             return new FamilyMember(source);
@@ -30,6 +22,8 @@ public class FamilyMember implements Parcelable {
     private String m_strPhoneNumber;
     private String m_strEmail;
     private String m_strLatestCoord;
+    private int m_nMemberDBId;
+    private int m_nFamilyId;
     //TODO list of locations
     private Boolean m_blnIsEmptyContainer;
 
@@ -38,8 +32,8 @@ public class FamilyMember implements Parcelable {
         m_blnIsEmptyContainer = true;
     }
 
-    public FamilyMember(String p_strName, String p_strPhone, String p_strEmail) {
-        constructedFamilyMemberCtorLogic(p_strName, p_strPhone, p_strEmail);
+    public FamilyMember(String p_strName, String p_strPhone, String p_strEmail, int p_nFamilyId, int p_nMemberId) {
+        constructedFamilyMemberCtorLogic(p_strName, p_strPhone, p_strEmail, p_nFamilyId, p_nMemberId);
 
     }
 
@@ -49,19 +43,23 @@ public class FamilyMember implements Parcelable {
         String strEmail = source.readString();
         String strPhone = source.readString();
         String strCoord = source.readString();
+        int nFamilyId = source.readInt();
+        int nMemberId = source.readInt();
 
         //constructing family member using the logic of the ctor used to create a family member
         // that has it's data already in the app
-        constructedFamilyMemberCtorLogic(strName, strPhone, strEmail);
+        constructedFamilyMemberCtorLogic(strName, strPhone, strEmail, nFamilyId, nMemberId);
         setLatestCoord(strCoord);
 
     }
 
-    private void constructedFamilyMemberCtorLogic(String p_strName, String p_strPhone, String p_strEmail) {
+    private void constructedFamilyMemberCtorLogic(String p_strName, String p_strPhone, String p_strEmail, int p_nFamilyId, int p_nMemberId) {
         m_blnIsEmptyContainer = false;
         m_strName = p_strName;
         m_strPhoneNumber = p_strPhone;
         m_strEmail = p_strEmail;
+        m_nFamilyId = p_nFamilyId;
+        m_nMemberDBId = p_nMemberId;
     }
 
     public String getName() {
@@ -102,11 +100,15 @@ public class FamilyMember implements Parcelable {
         //2.email
         //3.phone number
         //4.latest coordination recorded
+        //5 family db id
+        //6 member db id
         //more fields may be saved in the future for the proper communication with the service
         dest.writeString(m_strName);
         dest.writeString(m_strEmail);
         dest.writeString(m_strPhoneNumber);
         dest.writeString(m_strLatestCoord);
+        dest.writeInt(m_nFamilyId);
+        dest.writeInt(m_nMemberDBId);
 
     }
 }
