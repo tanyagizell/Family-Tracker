@@ -54,13 +54,6 @@ public class FTNotification {
         return null;
     }
 
-    @Override
-    public String toString() {
-        //TODO create string representation for log view
-        return null;
-    }
-
-
     public enum FTNotifStateENUM {
         ARRIVAL, DEPARTURE
     }

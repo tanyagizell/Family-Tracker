@@ -66,6 +66,10 @@ public class FamilyMember implements Parcelable {
         return m_strName;
     }
 
+    public void setName(String m_strName) {
+        this.m_strName = m_strName;
+    }
+
     public String getPhoneNumber() {
         return m_strPhoneNumber;
     }
@@ -110,5 +114,9 @@ public class FamilyMember implements Parcelable {
         dest.writeInt(m_nFamilyId);
         dest.writeInt(m_nMemberDBId);
 
+    }
+
+    public int getFamilyId() {
+        return m_nFamilyId;
     }
 }

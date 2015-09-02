@@ -133,4 +133,32 @@ public class FTDataSource {
         String strName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME));
         return new FamilyMember(strName, strPhone, strEmail, nFamilyId, nMemberId);
     }
+
+    public void UpdateFamilyMember(FamilyMember p_fmToUpdate) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_fmToUpdate.getName());
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_fmToUpdate.getEmail());
+        String[] arrstrUpdateArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_fmToUpdate.getFamilyId())};
+        _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, SINGLE_COLUMN_VALUE_CONDITION, arrstrUpdateArgs);
+    }
+
+    public FTLocation GetLocationByCoords(String p_strCoords) {
+        ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
+        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_COORD, p_strCoords};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrLocSelectionArgs, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrlstlcQueryRes.add(CreateLocationWithCursor(crsrDataRetriever));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrlstlcQueryRes.isEmpty() ? null : arrlstlcQueryRes.get(0);
+    }
+
+    private FTLocation CreateLocationWithCursor(Cursor crsrDataRetriever) {
+        String strCoord = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_COORD));
+        String strLocName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_NAME));
+        int nLocId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID));
+        return new FTLocation(strCoord, strLocName, nLocId);
+    }
 }
