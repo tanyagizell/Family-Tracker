@@ -1,9 +1,12 @@
 package il.ac.huji.familytracker;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Tanyagizell on 23/07/2015.
  */
-public class FTLocation {
+public class FTLocation implements Parcelable{
     private String m_strCoord;
     private String m_strLocName;
     private int m_nLocDBId;
@@ -24,5 +27,18 @@ public class FTLocation {
 
     public int getLocDBId() {
         return m_nLocDBId;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(m_strCoord);
+        parcel.writeString(m_strLocName);
+        parcel.writeInt(m_nLocDBId);
+
     }
 }

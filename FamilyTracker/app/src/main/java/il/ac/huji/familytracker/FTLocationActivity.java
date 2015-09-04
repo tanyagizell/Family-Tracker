@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,7 +35,7 @@ import com.parse.ParseAnalytics;
 public class FTLocationActivity extends ActionBarActivity {
 
     /*********************
-     ***** constants ******
+     ***** constants *****
      ********************/
     public static final String EXTRA_MESSAGE= "il.ac.huji.familytracker.MESSAGE";
     public static final String TAG = "FTLocationActivity";
@@ -41,8 +43,11 @@ public class FTLocationActivity extends ActionBarActivity {
     /*********************
      ***** Globals ******
      ********************/
-
-
+    //followers list
+    ArrayList<String> followersList;
+    //address
+    String addrName;
+    LatLng addrLatLng;
     /*********************
      ***** Widgets ******
      ********************/
@@ -50,18 +55,12 @@ public class FTLocationActivity extends ActionBarActivity {
     Button mapViewBtn; //Button to open map view for the location
     Button searchBtn;
     EditText edtTxt;
+    AutoCompleteTextView ACtxtView;
 
     ListView followerListView; //list view for the locations followers
     int locationID;
 
-    /**********************
-     ***** Variables ******
-     **********************/
-    //followers list
-    ArrayList<String> followersList;
-    //address
-    String addrName;
-    LatLng addrLatLng;
+
 
 
 
@@ -78,7 +77,7 @@ public class FTLocationActivity extends ActionBarActivity {
 //        int locID = Integer.valueOf(message);
 
         followersList = new ArrayList<String>();
-
+        //todo read from DB and set adapter
 
         /*** Widgets ***/
 
@@ -87,12 +86,10 @@ public class FTLocationActivity extends ActionBarActivity {
         mapViewBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-//                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-//                startActivity(intent);
-
                 openMap(v);
             }
         });
+
 
 
         //add button
@@ -100,7 +97,7 @@ public class FTLocationActivity extends ActionBarActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                showDialog(v);
+//                showDialog(v);
                 //TODO Add a follower
             }
         });
@@ -108,13 +105,26 @@ public class FTLocationActivity extends ActionBarActivity {
         //address text text
         edtTxt = (EditText) findViewById(R.id.editAddr);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
+        ACtxtView = (AutoCompleteTextView)
+                findViewById(R.id.countries_list);
+        ACtxtView.setAdapter(adapter);
+
+
+        private static final String[] COUNTRIES = new String[] {
+                "Belgium", "France", "Italy", "Germany", "Spain"
+        };
+
+
         //search Btn
         searchBtn = (Button) findViewById(R.id.SrchBtn);
         searchBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 String addr = edtTxt.getText().toString();
-                getLocationFromAddress(addr);
+                addrLatLng = getLocationFromAddress(addr);
+
             }
         });
 
@@ -159,11 +169,9 @@ public class FTLocationActivity extends ActionBarActivity {
 
     public void openMap (View view){
 
-        //Todo query database
-
         //TODO resolve URI
-        double latitude = 40.714728;
-        double longitude = -73.998672;
+        double latitude = addrLatLng.latitude;
+        double longitude = addrLatLng.longitude;
 
         String message =latitude + "," + longitude;
         Intent intent = new Intent(this, FTMapsActivity.class);
@@ -207,8 +215,8 @@ public class FTLocationActivity extends ActionBarActivity {
 
             latLng = new LatLng(location.getLatitude(), location.getLongitude() );
 
-            Log.v(lat, TAG);
-            Log.v(lng, TAG);
+//            Log.v(lat, TAG);
+//            Log.v(lng, TAG);
 
         } catch (Exception ex) {
 

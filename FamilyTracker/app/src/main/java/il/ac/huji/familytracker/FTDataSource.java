@@ -142,7 +142,7 @@ public class FTDataSource {
         _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, SINGLE_COLUMN_VALUE_CONDITION, arrstrUpdateArgs);
     }
 
-    public FTLocation GetLocationByCoords(String p_strCoords) {
+    public FTLocation GetLocationByCoords(String p_strCoords,int nMemberId) {
         ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
         String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_COORD, p_strCoords};
         Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrLocSelectionArgs, null, null, null, null);
@@ -160,5 +160,33 @@ public class FTDataSource {
         String strLocName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_NAME));
         int nLocId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID));
         return new FTLocation(strCoord, strLocName, nLocId);
+    }
+
+    public void InsertLocationToDB(FTLocation loc)
+    {
+        //todo
+    }
+
+    public void RemoveLocationFromDB(FTLocation loc)
+    {
+        //TODO
+    }
+    public ArrayList<FTLocation> GetLocationsByFamily(int familyId)
+    {
+        //todo
+        return null;
+    }
+
+    public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int LocId)
+    {
+        return null;
+    }
+    public void DeleteFamilyMemberRegistrationToLoc(int MemberId,int LocId)
+    {
+        //TODO
+    }
+    public void InsertFamilyMemberRegistrationToLoc(int MemberId,int LocId)
+    {
+        //TODO
     }
 }

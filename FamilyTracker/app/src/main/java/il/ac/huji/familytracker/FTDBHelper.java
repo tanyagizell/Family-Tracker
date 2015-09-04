@@ -36,15 +36,20 @@ public class FTDBHelper extends SQLiteOpenHelper {
     public static final String PLACES_TABLE_NAME = "places";
     public static final String PLACES_COLUMN_NAME = "PLACE_NAME";
     public static final String PLACES_COLUMN_COORD = "COORDS";
+    public static final String PLACES_COLUMN_FAMILY_ID = "FAMILY";
     public static final String PLACES_INSERT_COMMAND = String.format("INSERT INTO %s (%s,%s) VALUES (?,?)", PLACES_TABLE_NAME, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD);
     public static final String PLACES_COLUMN_PLACE_ID = "ID";
     private final String PLACES_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s TEXT NOT NULL," +
-                    "%s  TEXT NOT NULL UNIQUE);", PLACES_TABLE_NAME,
+                    "%s TEXT NOT NULL," +
+                    "%s INTEGER NOT NULL," +
+                    "FOREIGN KEY(%s) REFERENCES %s(%s));", PLACES_TABLE_NAME,
             PLACES_COLUMN_PLACE_ID,
             PLACES_COLUMN_NAME,
-            PLACES_COLUMN_COORD);
+            PLACES_COLUMN_COORD,
+            PLACES_COLUMN_FAMILY_ID,
+            PLACES_COLUMN_FAMILY_ID,FAMILIES_TABLE_NAME,FAMILIES_COLUMN_ID);
     public static final String[] PLACES_TABLE_DATA_COLUMNS = {PLACES_COLUMN_PLACE_ID, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD};
 
     //families table constants

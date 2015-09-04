@@ -39,6 +39,9 @@ public class FTPushNotificationBroadcastReceiver extends ParsePushBroadcastRecei
             JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
             String notificationText = json.getString("alert");
 
+            //TODO parse the notification
+
+
             NotificationCompat.Builder mBuilder =  new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.notification_template_icon_bg)
                     .setContentTitle("ParsePushTest")

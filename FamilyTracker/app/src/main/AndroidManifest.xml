@@ -41,6 +41,7 @@
         android:theme="@style/AppTheme"
         android:name=".FTStarter">
 
+
         <meta-data
             android:name="com.parse.APPLICATION_ID"
             android:value="@string/parse_app_id"
@@ -135,7 +136,8 @@ zz
             </intent-filter>
         </receiver>
 
-
+        <!-- Geofences-->
+        <!--<service android:name=".GeofenceTransitionsIntentService"/>-->
     </application>
 
 </manifest>
