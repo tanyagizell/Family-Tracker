@@ -8,8 +8,6 @@
     android:orientation="vertical">
 
 
-
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
@@ -22,23 +20,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/autoCompleteTextView"
-            android:layout_weight="4">
+            android:layout_weight="4"
+            android:ems="10">
             <requestFocus />
-
 
          </AutoCompleteTextView>
 
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:id="@+id/editAddr"
-            android:text="@string/address_text"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/textView"
-            android:layout_toEndOf="@+id/textView"
-            android:textSize="20dp"
-        />
 
         <Button
             android:layout_width="0dp"
@@ -49,14 +36,6 @@
         />
 
     </LinearLayout>
-
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-
-        android:text="Search"
-        android:id="@+id/SrchBtn"
-    />
 
 
     <TextView
@@ -84,7 +63,6 @@
         android:textSize="40dp"
 
     />
-
 
 
 </LinearLayout>

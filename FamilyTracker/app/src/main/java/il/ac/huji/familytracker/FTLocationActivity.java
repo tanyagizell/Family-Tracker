@@ -48,6 +48,12 @@ public class FTLocationActivity extends ActionBarActivity {
     //address
     String addrName;
     LatLng addrLatLng;
+    FT_placesAutoComplete autoComplete;
+
+    ListView followerListView; //list view for the locations followers
+    FTLocation location; //repr    esenting current location
+
+
     /*********************
      ***** Widgets ******
      ********************/
@@ -57,24 +63,23 @@ public class FTLocationActivity extends ActionBarActivity {
     EditText edtTxt;
     AutoCompleteTextView ACtxtView;
 
-    ListView followerListView; //list view for the locations followers
-    int locationID;
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftlocation);
 
-        //TODO read followers from db
-
-        //get location ID from locations activity
+        //get location  locations activity
 //        Intent intent = getIntent();
 //        String message = intent.getStringExtra(FTFamilyLocationsActivity.EXTRA_MESSAGE);
 //        int locID = Integer.valueOf(message);
+
+        String temploc ="";
+        location = new FTLocation(temploc,temploc,temploc,0,0,0);
+
+        //TODO read followers from db
+
+
 
         followersList = new ArrayList<String>();
         //todo read from DB and set adapter
@@ -102,35 +107,16 @@ public class FTLocationActivity extends ActionBarActivity {
             }
         });
 
-        //address text text
-        edtTxt = (EditText) findViewById(R.id.editAddr);
+        //address -search with autocomplete
+        autoComplete = new FT_placesAutoComplete(this);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, COUNTRIES);
         ACtxtView = (AutoCompleteTextView)
-                findViewById(R.id.countries_list);
-        ACtxtView.setAdapter(adapter);
-
-
-        private static final String[] COUNTRIES = new String[] {
-                "Belgium", "France", "Italy", "Germany", "Spain"
-        };
-
-
-        //search Btn
-        searchBtn = (Button) findViewById(R.id.SrchBtn);
-        searchBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                String addr = edtTxt.getText().toString();
-                addrLatLng = getLocationFromAddress(addr);
-
-            }
-        });
+                findViewById(R.id.autoCompleteTextView);
+        ACtxtView.setAdapter(new FT_placesAutoComplete.GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
+        ACtxtView.setOnItemClickListener(autoComplete);
 
 
     }
-
 
 
 
@@ -167,9 +153,17 @@ public class FTLocationActivity extends ActionBarActivity {
         }
     }
 
+
+    /*
+     * Open map activity with the stored coordinates
+     */
     public void openMap (View view){
 
-        //TODO resolve URI
+        //update location before opening the map
+        addrLatLng = getLocationFromAddress(location.getLocationAddr());
+        String addressUpdate = addrLatLng.latitude + "," + addrLatLng.longitude;
+        location.setLocationCoordinates(addressUpdate);
+
         double latitude = addrLatLng.latitude;
         double longitude = addrLatLng.longitude;
 
@@ -215,8 +209,6 @@ public class FTLocationActivity extends ActionBarActivity {
 
             latLng = new LatLng(location.getLatitude(), location.getLongitude() );
 
-//            Log.v(lat, TAG);
-//            Log.v(lng, TAG);
 
         } catch (Exception ex) {
 
