@@ -18,7 +18,7 @@ import java.util.Locale;
 public class FTDataSource {
 
     public static final String APP_DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
-    private static final String SINGLE_COLUMN_VALUE_CONDITION = "? = ?";
+    private static final String SINGLE_COLUMN_VALUE_CONDITION = "%s = ?";
     SQLiteDatabase _db;
     FTDBHelper _dbHelper;
 
@@ -103,7 +103,7 @@ public class FTDataSource {
     }
 
     private Family BuildFamilyFromRecord(Cursor crsrDataRetriever) {
-        int nDBId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILIES_COLUMN_NAME));
+        int nDBId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILIES_COLUMN_ID));
         String strName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILIES_COLUMN_NAME));
         return new Family(strName, nDBId);
     }
@@ -118,8 +118,8 @@ public class FTDataSource {
     // Family members table Methods
     public ArrayList<FamilyMember> GetFamilyMembersFromDB(int familyId) {
         ArrayList<FamilyMember> arrReturnItems = new ArrayList<>();
-        String[] arrstrFamilyIdCondArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID, Integer.toString(familyId)};
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILY_MEMBERS_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrFamilyIdCondArgs, null, null, null, null);
+        String[] arrstrFamilyIdCondArgs = {Integer.toString(familyId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILY_MEMBERS_TABLE_DATA_COLUMNS, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID), arrstrFamilyIdCondArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
             arrReturnItems.add(BuildFamilyMemberFromRecord(crsrDataRetriever));
@@ -133,13 +133,13 @@ public class FTDataSource {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_fmToUpdate.getName());
         values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_fmToUpdate.getEmail());
-        String[] arrstrUpdateArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_fmToUpdate.getFamilyId())};
-        _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, SINGLE_COLUMN_VALUE_CONDITION, arrstrUpdateArgs);
+        String[] arrstrUpdateArgs = {Integer.toString(p_fmToUpdate.getFamilyId())};
+        _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID), arrstrUpdateArgs);
     }
 
     private FamilyMember BuildFamilyMemberFromRecord(Cursor crsrDataRetriever) {
-        int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID));
-        int nMemberId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID));
+        int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID));
+        int nMemberId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID));
         String strEmail = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL));
         String strPhone = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_PHONE));
         String strName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME));
@@ -151,8 +151,8 @@ public class FTDataSource {
     public FTLocation GetLocationByCoordsAndFamily(String p_strCoords, int p_nFamilyId) {
         //TODO edit method to select location according to family
         ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
-        String strTwoColCondition = String.format("%s AND %s", SINGLE_COLUMN_VALUE_CONDITION, SINGLE_COLUMN_VALUE_CONDITION);
-        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_COORD, p_strCoords, FTDBHelper.PLACES_COLUMN_FAMILY, Integer.toString(p_nFamilyId)};
+        String strTwoColCondition = String.format("%s AND %s", String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_COORD), String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY));
+        String[] arrstrLocSelectionArgs = {p_strCoords, Integer.toString(p_nFamilyId)};
         Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, strTwoColCondition, arrstrLocSelectionArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
@@ -166,8 +166,8 @@ public class FTDataSource {
     public ArrayList<FTLocation> GetLocationsByFamily(int p_nFamilyId) {
         ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
 
-        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_FAMILY, Integer.toString(p_nFamilyId)};
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrLocSelectionArgs, null, null, null, null);
+        String[] arrstrLocSelectionArgs = {Integer.toString(p_nFamilyId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY), arrstrLocSelectionArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
             arrlstlcQueryRes.add(CreateLocationWithCursor(crsrDataRetriever));
@@ -196,9 +196,16 @@ public class FTDataSource {
             deleteRegistrationFromLocOfMembers(arrnMemberIdsToNotify, p_nLocId);
         }
 
+        DeleteLocFromLocTable(p_nLocId);
         return arrfmRetVal;
 
 
+    }
+
+    private void DeleteLocFromLocTable(int p_nLocId) {
+        String[] arrstrDeleteArgs = {Integer.toString(p_nLocId)};
+        String strQuery = String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_PLACE_ID);
+        _db.delete(FTDBHelper.PLACES_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
 
     private FTLocation CreateLocationWithCursor(Cursor crsrDataRetriever) {
@@ -216,22 +223,22 @@ public class FTDataSource {
         values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, p_nLocId);
         values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, p_nMemberId);
 // insert the row
-        long id = _db.insert(FTDBHelper.FAMILIES_TABLE_NAME, null, values);
+        long id = _db.insert(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, null, values);
     }
 
     public void DeleteMemberRegistrationToLocation(int p_nLocId, int p_nMemberId)
     {
-        String[] arrstrDeleteArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId), FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, Integer.toString(p_nLocId)};
-        String strQuery = String.format("%s AND %s", SINGLE_COLUMN_VALUE_CONDITION, SINGLE_COLUMN_VALUE_CONDITION);
+        String[] arrstrDeleteArgs = {Integer.toString(p_nMemberId), Integer.toString(p_nLocId)};
+        String strQuery = String.format("%s AND %s", String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID), String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID));
         _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
 
     private void deleteRegistrationFromLocOfMembers(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId)
     {
         ArrayList<String> arrstrComponentsOfQuery = ProvideWithDeleteComponents(arrnMemberIdsToNotify, p_nLocId);
-        String[] arrstrDeleteArgs = null;
         String strQuery = arrstrComponentsOfQuery.get(0);
-        ArrayList<String> arrstrArgs = (ArrayList<String>) arrstrComponentsOfQuery.subList(1, arrstrComponentsOfQuery.size() - 1);
+        ArrayList<String> arrstrArgs = new ArrayList<>(arrstrComponentsOfQuery.subList(1, arrstrComponentsOfQuery.size() - 1));
+        String[] arrstrDeleteArgs = new String[arrstrArgs.size()];
         arrstrDeleteArgs = arrstrArgs.toArray(arrstrDeleteArgs);
         _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
@@ -239,8 +246,8 @@ public class FTDataSource {
     private ArrayList<Integer> GetIdsOfMembersRegisteredForLoc(int p_nLocId) {
         ArrayList<Integer> arrnRetVal = new ArrayList<>();
         String[] arrstrMemberIdCol = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID};
-        String[] arrstrMemberSelectionArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, Integer.toString(p_nLocId)};
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, arrstrMemberIdCol, SINGLE_COLUMN_VALUE_CONDITION, arrstrMemberSelectionArgs, null, null, null, null);
+        String[] arrstrMemberSelectionArgs = {Integer.toString(p_nLocId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, arrstrMemberIdCol, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID), arrstrMemberSelectionArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
             arrnRetVal.add(crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID)));
@@ -264,19 +271,19 @@ public class FTDataSource {
 
     public void DeleteFamilyMember(int p_nMemberId) {
         String[] arrstrRegDeleteArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId)};
-        String strQuery = SINGLE_COLUMN_VALUE_CONDITION;
+        String strQuery = String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID);
         _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrRegDeleteArgs);
-        String[] arrstrMemberDeleteArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId)};
+        String[] arrstrMemberDeleteArgs = {Integer.toString(p_nMemberId)};
         _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrMemberDeleteArgs);
     }
 
     private ArrayList<FamilyMember> GetMembersByIds(ArrayList<Integer> arrnMemberIdsToNotify) {
         ArrayList<FamilyMember> arrlstlcQueryRes = new ArrayList<>();
-
-        String[] arrstrLocSelectionArgs = null;
         ArrayList<String> arrstrFuncOutput = new ArrayList<>();
         String strMemberSelectionClause = ConstructMultipleOptionsSqlClause(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, false, arrnMemberIdsToNotify, arrstrFuncOutput);
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILIES_TABLE_DATA_COLUMNS, strMemberSelectionClause, arrstrFuncOutput.toArray(arrstrLocSelectionArgs), null, null, null, null);
+        String[] arrstrLocSelectionArgs = new String[arrstrFuncOutput.size()];
+        arrstrLocSelectionArgs = arrstrFuncOutput.toArray(arrstrLocSelectionArgs);
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILY_MEMBERS_TABLE_DATA_COLUMNS, strMemberSelectionClause, arrstrLocSelectionArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
             arrlstlcQueryRes.add(BuildFamilyMemberFromRecord(crsrDataRetriever));
@@ -295,8 +302,7 @@ public class FTDataSource {
         if (arrnMemberIdsToNotify.size() > 1) {
             strIdPosQuerySegment = String.format("(%s)", strIdPosQuerySegment);
         }
-        strDeleteQuery = strIdPosQuerySegment + " AND " + SINGLE_COLUMN_VALUE_CONDITION;
-        arrstrQueryArgs.add(FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID);
+        strDeleteQuery = strIdPosQuerySegment + " AND " + String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID);
         arrstrQueryArgs.add(Integer.toString(p_nLocId));
         arrstrRetVal.add(strDeleteQuery);
         arrstrRetVal.addAll(arrstrQueryArgs);
@@ -306,12 +312,10 @@ public class FTDataSource {
     private String ConstructMultipleOptionsSqlClause(String p_strClauseColOfElems, boolean blnIsAnd, ArrayList<Integer> arrnClauseElems, ArrayList<String> arrstrQueryArgsOutput)
     {
         String strJoiningOperator = blnIsAnd ? "AND" : "OR";
-        String strIdPosQuerySegment = SINGLE_COLUMN_VALUE_CONDITION;
-        arrstrQueryArgsOutput.add(p_strClauseColOfElems);
+        String strIdPosQuerySegment = String.format(SINGLE_COLUMN_VALUE_CONDITION, p_strClauseColOfElems);
         arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(0)));
         for (int nMembersIterator = 1; nMembersIterator < arrnClauseElems.size(); nMembersIterator++) {
-            strIdPosQuerySegment += strJoiningOperator + SINGLE_COLUMN_VALUE_CONDITION;
-            arrstrQueryArgsOutput.add(p_strClauseColOfElems);
+            strIdPosQuerySegment += strJoiningOperator + String.format(SINGLE_COLUMN_VALUE_CONDITION, p_strClauseColOfElems);
             arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(nMembersIterator)));
         }
 
