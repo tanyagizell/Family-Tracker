@@ -32,36 +32,42 @@ public class FTDBHelper extends SQLiteOpenHelper {
             NOTIFICATION_COLUMN_TIME_STAMP,
             NOTIFICATION_COLUMN_NTF_MGR_ID);
     public static final String[] NOTIFICATION_TABLE_DATA_COLUMNS = {NOTIFICATION_COLUMN_DB_ID, NOTIFICATION_COLUMN_TYPE, NOTIFICATION_COLUMN_COORD, NOTIFICATION_COLUMN_TIME_STAMP, NOTIFICATION_COLUMN_NTF_MGR_ID};
-    //places table constants
-    public static final String PLACES_TABLE_NAME = "places";
-    public static final String PLACES_COLUMN_NAME = "PLACE_NAME";
-    public static final String PLACES_COLUMN_COORD = "COORDS";
-    public static final String PLACES_COLUMN_FAMILY = "FAMILY_ID";
-    public static final String PLACES_INSERT_COMMAND = String.format("INSERT INTO %s (%s,%s,%s) VALUES (?,?,?)", PLACES_TABLE_NAME, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD, PLACES_COLUMN_FAMILY);
-    public static final String PLACES_COLUMN_PLACE_ID = "ID";
-    public static final String[] PLACES_TABLE_DATA_COLUMNS = {PLACES_COLUMN_PLACE_ID, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD, PLACES_COLUMN_FAMILY};
     //families table constants
     public static final String FAMILIES_TABLE_NAME = "families";
     public static final String FAMILIES_COLUMN_NAME = "FAMILY_NAME";
     public static final String FAMILIES_INSERT_COMMAND = String.format("INSERT INTO  %s (%s) VALUES (?)", FAMILIES_TABLE_NAME, FAMILIES_COLUMN_NAME);
     public static final String FAMILIES_COLUMN_ID = "ID";
-    private final String PLACES_TABLE_CREATION = String.format("CREATE TABLE %s (" +
-                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "%s TEXT NOT NULL," +
-                    "%s TEXT NOT NULL ," +
-                    "%s INTEGER NOT NULL," +
-                    "FOREIGN KEY(%s) REFERENCES %s(%s));", PLACES_TABLE_NAME,
-            PLACES_COLUMN_PLACE_ID,
-            PLACES_COLUMN_NAME,
-            PLACES_COLUMN_COORD,
-            PLACES_COLUMN_FAMILY,
-            PLACES_COLUMN_FAMILY, FAMILIES_TABLE_NAME, FAMILIES_COLUMN_ID);
     private final String FAMILIES_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s  TEXT NOT NULL);", FAMILIES_TABLE_NAME,
             FAMILIES_COLUMN_ID,
             FAMILIES_COLUMN_NAME);
     public static final String[] FAMILIES_TABLE_DATA_COLUMNS = {FAMILIES_COLUMN_ID, FAMILIES_COLUMN_NAME};
+
+    //places table constants
+    public static final String PLACES_TABLE_NAME = "places";
+    public static final String PLACES_COLUMN_NAME = "PLACE_NAME";
+    public static final String PLACES_COLUMN_COORD = "COORDS";
+    public static final String PLACES_COLUMN_FAMILY = "FAMILY_ID";
+    public static final String PLACES_COLUMN_PLACE_ADDRESS = "ADDRESS";
+    public static final String PLACES_INSERT_COMMAND = String.format("INSERT INTO %s (%s,%s,%s,%s) VALUES (?,?,?,?)", PLACES_TABLE_NAME, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD, PLACES_COLUMN_FAMILY, PLACES_COLUMN_PLACE_ADDRESS);
+    public static final String PLACES_COLUMN_PLACE_ID = "ID";
+    public static final String[] PLACES_TABLE_DATA_COLUMNS = {PLACES_COLUMN_PLACE_ID, PLACES_COLUMN_NAME, PLACES_COLUMN_COORD, PLACES_COLUMN_FAMILY, PLACES_COLUMN_PLACE_ADDRESS};
+
+    private final String PLACES_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s TEXT NOT NULL," +
+                    "%s TEXT NOT NULL ," +
+                    "%s INTEGER NOT NULL," +
+                    "%s TEXT NOT NULL," +
+                    "FOREIGN KEY(%s) REFERENCES %s(%s));", PLACES_TABLE_NAME,
+            PLACES_COLUMN_PLACE_ID,
+            PLACES_COLUMN_NAME,
+            PLACES_COLUMN_COORD,
+            PLACES_COLUMN_FAMILY,
+            PLACES_COLUMN_PLACE_ADDRESS,
+            PLACES_COLUMN_FAMILY, FAMILIES_TABLE_NAME, FAMILIES_COLUMN_ID);
+
 
     //family members table constants
     public static final String FAMILY_MEMBERS_TABLE_NAME = "familymembers";

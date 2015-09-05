@@ -177,11 +177,12 @@ public class FTDataSource {
         return arrlstlcQueryRes;
     }
 
-    public void AddLocationToFamily(String p_strCoords, String p_strName, int p_nFamily) {
+    public void AddLocationToFamily(String p_strCoords, String p_strName, int p_nFamily, String p_strAddress) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.PLACES_COLUMN_COORD, p_strCoords);
         values.put(FTDBHelper.PLACES_COLUMN_FAMILY, p_nFamily);
         values.put(FTDBHelper.PLACES_COLUMN_NAME, p_strName);
+        values.put(FTDBHelper.PLACES_COLUMN_PLACE_ADDRESS, p_strAddress);
 // insert the row
         long id = _db.insert(FTDBHelper.PLACES_TABLE_NAME, null, values);
     }
@@ -213,7 +214,8 @@ public class FTDataSource {
         String strLocName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_NAME));
         int nLocId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID));
         int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_FAMILY));
-        return new FTLocation(strCoord, strLocName, nLocId, nFamilyId);
+        String strAddress = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ADDRESS));
+        return new FTLocation(strCoord, strLocName, strAddress, nLocId, nFamilyId);
     }
 
     //Members To Places Table Methods
@@ -311,7 +313,7 @@ public class FTDataSource {
 
     private String ConstructMultipleOptionsSqlClause(String p_strClauseColOfElems, boolean blnIsAnd, ArrayList<Integer> arrnClauseElems, ArrayList<String> arrstrQueryArgsOutput)
     {
-        String strJoiningOperator = blnIsAnd ? "AND" : "OR";
+        String strJoiningOperator = blnIsAnd ? " AND " : " OR ";
         String strIdPosQuerySegment = String.format(SINGLE_COLUMN_VALUE_CONDITION, p_strClauseColOfElems);
         arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(0)));
         for (int nMembersIterator = 1; nMembersIterator < arrnClauseElems.size(); nMembersIterator++) {

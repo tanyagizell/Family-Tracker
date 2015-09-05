@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class FTLogActivity extends ActionBarActivity {
 
-    ArrayList<String> _logEntries;
+    FTLogAdapter _logEntries;
     ListAdapter _logEntriesAdapter; //TODO make this custom to hold date & content
 
     //TODO propogate settings
