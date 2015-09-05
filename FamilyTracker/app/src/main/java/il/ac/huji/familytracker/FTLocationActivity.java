@@ -17,6 +17,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import com.parse.ParseAnalytics;
 * list is managed
 * */
 
-public class FTLocationActivity extends ActionBarActivity {
+public class FTLocationActivity extends ActionBarActivity implements FTDialogFragment.DialogListener {
 
     /*********************
      ***** constants *****
@@ -45,6 +46,7 @@ public class FTLocationActivity extends ActionBarActivity {
      ********************/
     //followers list
     ArrayList<String> followersList;
+    ArrayList<String> familyMembers;
     //address
     String addrName;
     LatLng addrLatLng;
@@ -75,8 +77,10 @@ public class FTLocationActivity extends ActionBarActivity {
 //        int locID = Integer.valueOf(message);
 
         String temploc ="";
-        location = new FTLocation(temploc,temploc,temploc,0,0,0);
+        location = new FTLocation(temploc,temploc,temploc,0,0);
 
+        //TODO read family members from DB
+        familyMembers = new ArrayList<String>();
         //TODO read followers from db
 
 
@@ -102,13 +106,13 @@ public class FTLocationActivity extends ActionBarActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-//                showDialog(v);
+                showDialog(v);
                 //TODO Add a follower
             }
         });
 
         //address -search with autocomplete
-        autoComplete = new FT_placesAutoComplete(this);
+        autoComplete = new FT_placesAutoComplete(this,location);
 
         ACtxtView = (AutoCompleteTextView)
                 findViewById(R.id.autoCompleteTextView);
@@ -143,14 +147,13 @@ public class FTLocationActivity extends ActionBarActivity {
     }
 
     public void showDialog(View v){
+
         FragmentManager manager = getFragmentManager();
 
-        FTDialogFragment df = new FTDialogFragment().getInstance();
-//        df.setOnItemClickListener(listener);
-        Fragment fr = getSupportFragmentManager().findFragmentByTag(FTDialogFragment.TAG);
-        if (fr == null) {
-            df.show(manager, FTDialogFragment.TAG);
-        }
+        FTDialogFragment dialog = new FTDialogFragment();
+        familyMembers.add("ba");
+        dialog.setItemsList(familyMembers);
+        dialog.show(manager, "dialog");
     }
 
 
@@ -218,5 +221,10 @@ public class FTLocationActivity extends ActionBarActivity {
         return latLng;
     }
 
+    @Override
+    public void onDialogItemSelect(int position) {
+        //todo DB interaction
+        followersList.add(familyMembers.get(position));
+    }
 }
 

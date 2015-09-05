@@ -22,6 +22,7 @@ public class FTMapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; //Google map object. Might be null if Google Play services APK is not available.
 
+    LatLng latlang;
 
 
     @Override
