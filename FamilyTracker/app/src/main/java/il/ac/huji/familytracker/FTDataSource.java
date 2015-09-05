@@ -22,8 +22,7 @@ public class FTDataSource {
     SQLiteDatabase _db;
     FTDBHelper _dbHelper;
 
-    public FTDataSource(Context context)
-    {
+    public FTDataSource(Context context) {
         _dbHelper = new FTDBHelper(context);
     }
 
@@ -42,6 +41,8 @@ public class FTDataSource {
         //TODO find way to handle concurrency
         _dbHelper.close();
     }
+
+    //Notification table methods
 
     public ArrayList<FTNotification> GeteNotificationsItemsFromDB() {
         ArrayList<FTNotification> arrReturnItems = new ArrayList<>();
@@ -74,6 +75,7 @@ public class FTDataSource {
         long id = _db.insert(FTDBHelper.NOTIFICATION_TABLE_NAME, null, values);
     }
 
+    //Notification Helper methods
     private String ProduceDateForDB(Date p_dtDateToConvert) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 APP_DATETIME_FORMAT, Locale.getDefault());
@@ -85,6 +87,7 @@ public class FTDataSource {
     }
 
 
+    //Families table methods
     public ArrayList<Family> GetFamiliesFromDB() {
         ArrayList<Family> arrReturnItems = new ArrayList<>();
         Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILIES_TABLE_NAME, FTDBHelper.FAMILIES_TABLE_DATA_COLUMNS, null, null, null, null, null, null);
@@ -112,6 +115,7 @@ public class FTDataSource {
         long id = _db.insert(FTDBHelper.FAMILIES_TABLE_NAME, null, values);
     }
 
+    // Family members table Methods
     public ArrayList<FamilyMember> GetFamilyMembersFromDB(int familyId) {
         ArrayList<FamilyMember> arrReturnItems = new ArrayList<>();
         String[] arrstrFamilyIdCondArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID, Integer.toString(familyId)};
@@ -125,6 +129,14 @@ public class FTDataSource {
         return arrReturnItems;
     }
 
+    public void UpdateFamilyMember(FamilyMember p_fmToUpdate) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_fmToUpdate.getName());
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_fmToUpdate.getEmail());
+        String[] arrstrUpdateArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_fmToUpdate.getFamilyId())};
+        _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, SINGLE_COLUMN_VALUE_CONDITION, arrstrUpdateArgs);
+    }
+
     private FamilyMember BuildFamilyMemberFromRecord(Cursor crsrDataRetriever) {
         int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID));
         int nMemberId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID));
@@ -134,18 +146,14 @@ public class FTDataSource {
         return new FamilyMember(strName, strPhone, strEmail, nFamilyId, nMemberId);
     }
 
-    public void UpdateFamilyMember(FamilyMember p_fmToUpdate) {
-        ContentValues values = new ContentValues();
-        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_fmToUpdate.getName());
-        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_fmToUpdate.getEmail());
-        String[] arrstrUpdateArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_fmToUpdate.getFamilyId())};
-        _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, SINGLE_COLUMN_VALUE_CONDITION, arrstrUpdateArgs);
-    }
 
-    public FTLocation GetLocationByCoords(String p_strCoords,int nMemberId) {
+    //Places Table Methods
+    public FTLocation GetLocationByCoordsAndFamily(String p_strCoords, int p_nFamilyId) {
+        //TODO edit method to select location according to family
         ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
-        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_COORD, p_strCoords};
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrLocSelectionArgs, null, null, null, null);
+        String strTwoColCondition = String.format("%s AND %s", SINGLE_COLUMN_VALUE_CONDITION, SINGLE_COLUMN_VALUE_CONDITION);
+        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_COORD, p_strCoords, FTDBHelper.PLACES_COLUMN_FAMILY, Integer.toString(p_nFamilyId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, strTwoColCondition, arrstrLocSelectionArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
             arrlstlcQueryRes.add(CreateLocationWithCursor(crsrDataRetriever));
@@ -155,38 +163,164 @@ public class FTDataSource {
         return arrlstlcQueryRes.isEmpty() ? null : arrlstlcQueryRes.get(0);
     }
 
+    public ArrayList<FTLocation> GetLocationsByFamily(int p_nFamilyId) {
+        ArrayList<FTLocation> arrlstlcQueryRes = new ArrayList<>();
+
+        String[] arrstrLocSelectionArgs = {FTDBHelper.PLACES_COLUMN_FAMILY, Integer.toString(p_nFamilyId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, FTDBHelper.PLACES_TABLE_DATA_COLUMNS, SINGLE_COLUMN_VALUE_CONDITION, arrstrLocSelectionArgs, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrlstlcQueryRes.add(CreateLocationWithCursor(crsrDataRetriever));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrlstlcQueryRes;
+    }
+
+    public void AddLocationToFamily(String p_strCoords, String p_strName, int p_nFamily) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.PLACES_COLUMN_COORD, p_strCoords);
+        values.put(FTDBHelper.PLACES_COLUMN_FAMILY, p_nFamily);
+        values.put(FTDBHelper.PLACES_COLUMN_NAME, p_strName);
+// insert the row
+        long id = _db.insert(FTDBHelper.PLACES_TABLE_NAME, null, values);
+    }
+
+    public ArrayList<FamilyMember> removeLocation(int p_nLocId) {
+        //get user id's of those registered for location for notification process
+        ArrayList<Integer> arrnMemberIdsToNotify = GetIdsOfMembersRegisteredForLoc(p_nLocId);
+        ArrayList<FamilyMember> arrfmRetVal = new ArrayList<>();
+        //send notifications to the devices registered so that they'll remove the geofences
+        if (!arrnMemberIdsToNotify.isEmpty()) {
+            arrfmRetVal = GetMembersByIds(arrnMemberIdsToNotify);
+            deleteRegistrationFromLocOfMembers(arrnMemberIdsToNotify, p_nLocId);
+        }
+
+        return arrfmRetVal;
+
+
+    }
+
     private FTLocation CreateLocationWithCursor(Cursor crsrDataRetriever) {
         String strCoord = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_COORD));
         String strLocName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_NAME));
         int nLocId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID));
-        return new FTLocation(strCoord, strLocName, nLocId);
+        int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_FAMILY));
+        return new FTLocation(strCoord, strLocName, nLocId, nFamilyId);
     }
 
-    public void InsertLocationToDB(FTLocation loc)
+    //Members To Places Table Methods
+    public void InsertMemberRegistrationToLocation(int p_nLocId, int p_nMemberId)
     {
-        //todo
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, p_nLocId);
+        values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, p_nMemberId);
+// insert the row
+        long id = _db.insert(FTDBHelper.FAMILIES_TABLE_NAME, null, values);
     }
 
-    public void RemoveLocationFromDB(FTLocation loc)
+    public void DeleteMemberRegistrationToLocation(int p_nLocId, int p_nMemberId)
     {
-        //TODO
-    }
-    public ArrayList<FTLocation> GetLocationsByFamily(int familyId)
-    {
-        //todo
-        return null;
+        String[] arrstrDeleteArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId), FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, Integer.toString(p_nLocId)};
+        String strQuery = String.format("%s AND %s", SINGLE_COLUMN_VALUE_CONDITION, SINGLE_COLUMN_VALUE_CONDITION);
+        _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
 
-    public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int LocId)
+    private void deleteRegistrationFromLocOfMembers(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId)
     {
-        return null;
+        ArrayList<String> arrstrComponentsOfQuery = ProvideWithDeleteComponents(arrnMemberIdsToNotify, p_nLocId);
+        String[] arrstrDeleteArgs = null;
+        String strQuery = arrstrComponentsOfQuery.get(0);
+        ArrayList<String> arrstrArgs = (ArrayList<String>) arrstrComponentsOfQuery.subList(1, arrstrComponentsOfQuery.size() - 1);
+        arrstrDeleteArgs = arrstrArgs.toArray(arrstrDeleteArgs);
+        _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
-    public void DeleteFamilyMemberRegistrationToLoc(int MemberId,int LocId)
-    {
-        //TODO
+
+    private ArrayList<Integer> GetIdsOfMembersRegisteredForLoc(int p_nLocId) {
+        ArrayList<Integer> arrnRetVal = new ArrayList<>();
+        String[] arrstrMemberIdCol = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID};
+        String[] arrstrMemberSelectionArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, Integer.toString(p_nLocId)};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, arrstrMemberIdCol, SINGLE_COLUMN_VALUE_CONDITION, arrstrMemberSelectionArgs, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrnRetVal.add(crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID)));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrnRetVal;
     }
-    public void InsertFamilyMemberRegistrationToLoc(int MemberId,int LocId)
+
+    // Family Members Table Methods
+    public void InsertFamilyMemberToDB(String p_strName, String p_strPhone, String p_strEmail, int p_nFamilyId)
     {
-        //TODO
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_strEmail);
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_strName);
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_PHONE, p_strPhone);
+        values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID, p_nFamilyId);
+// insert the row
+        long id = _db.insert(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, null, values);
+    }
+
+    public void DeleteFamilyMember(int p_nMemberId) {
+        String[] arrstrRegDeleteArgs = {FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId)};
+        String strQuery = SINGLE_COLUMN_VALUE_CONDITION;
+        _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrRegDeleteArgs);
+        String[] arrstrMemberDeleteArgs = {FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, Integer.toString(p_nMemberId)};
+        _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrMemberDeleteArgs);
+    }
+
+    private ArrayList<FamilyMember> GetMembersByIds(ArrayList<Integer> arrnMemberIdsToNotify) {
+        ArrayList<FamilyMember> arrlstlcQueryRes = new ArrayList<>();
+
+        String[] arrstrLocSelectionArgs = null;
+        ArrayList<String> arrstrFuncOutput = new ArrayList<>();
+        String strMemberSelectionClause = ConstructMultipleOptionsSqlClause(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID, false, arrnMemberIdsToNotify, arrstrFuncOutput);
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILIES_TABLE_DATA_COLUMNS, strMemberSelectionClause, arrstrFuncOutput.toArray(arrstrLocSelectionArgs), null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrlstlcQueryRes.add(BuildFamilyMemberFromRecord(crsrDataRetriever));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrlstlcQueryRes;
+    }
+
+    //General use private methods
+    private ArrayList<String> ProvideWithDeleteComponents(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId) {
+        ArrayList<String> arrstrRetVal = new ArrayList<>();
+        ArrayList<String> arrstrQueryArgs = new ArrayList<>();
+        String strDeleteQuery;
+        String strIdPosQuerySegment = ConstructMultipleOptionsSqlClause(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, false, arrnMemberIdsToNotify, arrstrQueryArgs);
+        if (arrnMemberIdsToNotify.size() > 1) {
+            strIdPosQuerySegment = String.format("(%s)", strIdPosQuerySegment);
+        }
+        strDeleteQuery = strIdPosQuerySegment + " AND " + SINGLE_COLUMN_VALUE_CONDITION;
+        arrstrQueryArgs.add(FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID);
+        arrstrQueryArgs.add(Integer.toString(p_nLocId));
+        arrstrRetVal.add(strDeleteQuery);
+        arrstrRetVal.addAll(arrstrQueryArgs);
+        return arrstrRetVal;
+    }
+
+    private String ConstructMultipleOptionsSqlClause(String p_strClauseColOfElems, boolean blnIsAnd, ArrayList<Integer> arrnClauseElems, ArrayList<String> arrstrQueryArgsOutput)
+    {
+        String strJoiningOperator = blnIsAnd ? "AND" : "OR";
+        String strIdPosQuerySegment = SINGLE_COLUMN_VALUE_CONDITION;
+        arrstrQueryArgsOutput.add(p_strClauseColOfElems);
+        arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(0)));
+        for (int nMembersIterator = 1; nMembersIterator < arrnClauseElems.size(); nMembersIterator++) {
+            strIdPosQuerySegment += strJoiningOperator + SINGLE_COLUMN_VALUE_CONDITION;
+            arrstrQueryArgsOutput.add(p_strClauseColOfElems);
+            arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(nMembersIterator)));
+        }
+
+        return strIdPosQuerySegment;
+    }
+
+
+    public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int p_nLocId) {
+        ArrayList<Integer> arrnReqMembersIds = GetIdsOfMembersRegisteredForLoc(p_nLocId);
+        return GetMembersByIds(arrnReqMembersIds);
     }
 }
