@@ -119,4 +119,8 @@ public class FamilyMember implements Parcelable {
     public int getFamilyId() {
         return m_nFamilyId;
     }
+
+    public int getMemberId() {
+        return m_nMemberDBId;
+    }
 }

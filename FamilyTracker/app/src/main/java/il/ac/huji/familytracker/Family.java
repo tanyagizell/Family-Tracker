@@ -60,4 +60,12 @@ public class Family implements Parcelable {
         dest.writeString(_familyName);
         dest.writeInt(_DBFamilyID);
     }
+
+    public String getfamilyName() {
+        return _familyName;
+    }
+
+    public int getFamilyID() {
+        return _DBFamilyID;
+    }
 }
