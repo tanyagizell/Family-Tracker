@@ -25,6 +25,19 @@ public class FTLocation implements Parcelable {
     private int m_nLocDBId;
     private int m_FamilyId;
 
+    /*
+     * constructor for an empty location with only an ID
+     */
+    public FTLocation(int id,int familyID){
+        this.m_nLocDBId = id;
+        this.m_FamilyId = familyID;
+        //set all the rest of the parameters with default valies
+        this.m_strCoord = "";
+        this.m_strLocName = "";
+        this.m_strAddr = "";
+
+    }
+
     public FTLocation(String m_strCoord, String m_strLocName, String m_strAddr,int m_nLocDBId, int m_FamilyId) {
         this.m_strCoord = m_strCoord;
         this.m_strLocName = m_strLocName;

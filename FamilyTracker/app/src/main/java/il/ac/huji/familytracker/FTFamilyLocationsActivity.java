@@ -1,10 +1,15 @@
 package il.ac.huji.familytracker;
 
+import android.content.Intent;
 import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -13,19 +18,52 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
 
 
     /*********************
-     ***** Globals ******
+     ***** Constants ******
      ********************/
     public static final String EXTRA_MESSAGE = "il.ac.huji.familytracker.MESSAGE";
 
-
-    //TODO manage DB
+    /*********************
+     ***** Globals ******
+     ********************/
+    int familyID //the family ID
 
     ArrayList<FTLocation> _locations;
+    ArrayList<String> _locNames;
+    ArrayAdapter<String> _locationsAdapter;
+
+    /*********************
+     ***** Widgets ******
+     ********************/
+
+    ListView locationsListView;
+    Button addButton;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftfamily_locations);
+
+        //TODO below
+        //get family id from parent activity
+//        Intent intent = getIntent();
+//        familyID = intent.getIntExtra("todo","todo");
+
+        //widgets
+        addButton = (Button) findViewById(R.id.addBtn);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO add a location
+                int locId = _locations.size();
+                String temp;
+
+                Intent intent = new Intent();
+
+            }
+        });
+
     }
 
 
