@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -20,7 +21,7 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
     /*********************
      ***** Constants ******
      ********************/
-    public static final String EXTRA_MESSAGE = "il.ac.huji.familytracker.MESSAGE";
+    public static final String LOCATION_MESSAGE = "il.ac.huji.familytracker.MESSAGE";
 
     /*********************
      ***** Globals ******
@@ -30,6 +31,7 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
     ArrayList<FTLocation> _locations;
     ArrayList<String> _locNames;
     ArrayAdapter<String> _locationsAdapter;
+    FTDataSource dataSource;
 
     /*********************
      ***** Widgets ******
@@ -45,27 +47,67 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftfamily_locations);
 
-        //TODO below
-        //get family id from parent activity
+//        //TODO below
+//        get family id from parent activity
 //        Intent intent = getIntent();
-//        familyID = intent.getIntExtra("todo","todo");
+//        Family family = intent.getParcelableExtra("todo","todo"); //TODO
+//        familyID = family.getFamilyID();
 
         //widgets
         addButton = (Button) findViewById(R.id.addBtn);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO add a location
-                int locId = _locations.size();
-                String temp;
 
-                Intent intent = new Intent();
+                //add new location to DB
+                String tempStr= "temp";
 
+                /*int locId = */dataSource.AddLocationToFamily(tempStr,tempStr,familyID,tempStr); //get id for new location
+                FTLocation newLoc = new FTLocation(locId);
+
+                Intent intent = new Intent(view.getContext(), FTLocationActivity.class);
+                intent.putExtra(LOCATION_MESSAGE,newLoc); //send the location to the next activity
+                startActivity(intent);
+
+            }
+        });
+
+        locationsListView =(ListView) findViewById(R.id.locationsListView);
+        _locationsAdapter=new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, _locNames);
+        locationsListView.setAdapter(_locationsAdapter);
+        locationsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //TODO dialog to delete
+                _locations.remove(i);
+                _locNames.remove(i);
+                return false;
             }
         });
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                //todo update Location in DB
+                FTLocation newLoc = data.getParcelableExtra("LOCATION_MESSAGE");
+                _locations.add(newLoc);
+                _locNames.add(newLoc.getLocationName());
+
+
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //Write your code if there's no result
+                FTLocation canceledLoc = data.getParcelableExtra("LOCATION_MESSAGE");
+                dataSource.removeLocation(canceledLoc.getID());
+
+            }
+        }
+    }//onActivityResult
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
