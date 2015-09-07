@@ -4,22 +4,30 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 
 
 public class FTLogActivity extends ActionBarActivity {
 
-    FTLogAdapter _logEntries;
-    ListAdapter _logEntriesAdapter; //TODO make this custom to hold date & content
-
-    //TODO propogate settings
+    FTLogAdapter _logEntriesAdapter;
+    FTDataSource _dsNotificationsRetriever;
+    ListView lvNotificationsDisplay;
+    private ArrayList<FTNotification> m_arrNotifications;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftlog);
+        lvNotificationsDisplay = (ListView) findViewById(R.id.NotificationsListView);
+        _dsNotificationsRetriever = new FTDataSource(this);
+        _dsNotificationsRetriever.OpenToRead();
+        m_arrNotifications = _dsNotificationsRetriever.GeteNotificationsItemsFromDB();
+        _dsNotificationsRetriever.close();
+        _logEntriesAdapter = new FTLogAdapter(this, m_arrNotifications);
+        lvNotificationsDisplay.setAdapter(_logEntriesAdapter);
+
     }
 
 

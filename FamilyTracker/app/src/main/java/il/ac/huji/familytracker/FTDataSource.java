@@ -62,7 +62,8 @@ public class FTDataSource {
         String strCoord = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_COORD));
         String strTimeStamp = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_TIME_STAMP));
         String strType = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_TYPE));
-        return new FTNotification(strType, strTimeStamp, strCoord, nNotifMgr);
+        String strSubject = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_SUBJECT_NAME));
+        return new FTNotification(strType, strTimeStamp, strCoord, nNotifMgr, strSubject);
     }
 
     public void InsertNotification(FTNotification p_ntfToInsert) {
@@ -71,6 +72,7 @@ public class FTDataSource {
         values.put(FTDBHelper.NOTIFICATION_COLUMN_COORD, FormSingleCoordVal(p_ntfToInsert));
         values.put(FTDBHelper.NOTIFICATION_COLUMN_TIME_STAMP, ProduceDateForDB(p_ntfToInsert.getTimeStamp()));
         values.put(FTDBHelper.NOTIFICATION_COLUMN_NTF_MGR_ID, p_ntfToInsert.getIdInNotifMgr());
+        values.put(FTDBHelper.NOTIFICATION_COLUMN_SUBJECT_NAME, p_ntfToInsert.getSubjectName());
 // insert the row
         long id = _db.insert(FTDBHelper.NOTIFICATION_TABLE_NAME, null, values);
     }
@@ -137,6 +139,20 @@ public class FTDataSource {
         _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID), arrstrUpdateArgs);
     }
 
+    public String GetMemberNameByPhone(String p_strPhone) {
+        ArrayList<String> arrReturnItems = new ArrayList<>();
+        String[] arrstrWhereArgs = {p_strPhone};
+        String[] arrstrMemberNameCol = {FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, arrstrMemberNameCol, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_PHONE), arrstrWhereArgs, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrReturnItems.add(crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME)));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrReturnItems.isEmpty() ? null : arrReturnItems.get(0);
+    }
+
     private FamilyMember BuildFamilyMemberFromRecord(Cursor crsrDataRetriever) {
         int nFamilyId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_FAMILY_ID));
         int nMemberId = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID));
@@ -177,7 +193,7 @@ public class FTDataSource {
         return arrlstlcQueryRes;
     }
 
-    public void AddLocationToFamily(String p_strCoords, String p_strName, int p_nFamily, String p_strAddress) {
+    public int AddLocationToFamily(String p_strCoords, String p_strName, int p_nFamily, String p_strAddress) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.PLACES_COLUMN_COORD, p_strCoords);
         values.put(FTDBHelper.PLACES_COLUMN_FAMILY, p_nFamily);
@@ -185,6 +201,20 @@ public class FTDataSource {
         values.put(FTDBHelper.PLACES_COLUMN_PLACE_ADDRESS, p_strAddress);
 // insert the row
         long id = _db.insert(FTDBHelper.PLACES_TABLE_NAME, null, values);
+
+        String[] arrstrPlaceIdColumn = {FTDBHelper.PLACES_COLUMN_PLACE_ID};
+        String strSpecificPlaceSelection = String.format("%s AND %s",
+                String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_COORD),
+                String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY));
+        String[] arrStrSelectionArgs = {p_strCoords, Integer.toString(p_nFamily)};
+        Cursor crsrCurrentRecordGetter = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, arrstrPlaceIdColumn, strSpecificPlaceSelection, arrStrSelectionArgs, null, null, null, null);
+        crsrCurrentRecordGetter.moveToFirst();
+        ArrayList<Integer> arrnRetVal = new ArrayList<>();
+        while (!crsrCurrentRecordGetter.isAfterLast()) {
+            arrnRetVal.add(crsrCurrentRecordGetter.getInt(crsrCurrentRecordGetter.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID)));
+            crsrCurrentRecordGetter.moveToNext();
+        }
+        return arrnRetVal.get(0);
     }
 
     public ArrayList<FamilyMember> removeLocation(int p_nLocId) {

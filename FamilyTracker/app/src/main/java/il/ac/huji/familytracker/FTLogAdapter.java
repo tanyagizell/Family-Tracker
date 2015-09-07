@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,9 @@ import java.util.ArrayList;
  * Created by Omer on 02/09/2015.
  */
 public class FTLogAdapter extends ArrayAdapter<FTNotification> {
+    private static final String NOTIFICATION_CONTENT_FORMAT = "%s %s %s";
+    private static final String NOTIFICATION_ARRIVED_AT_SEGMENT = "arrived at";
+    private static final String NOTIFICATION_LEFT_SEGMENT = "left";
     private Context m_cntxtCurrContext;
     private ArrayList<FTNotification> m_arrNotifications;
 
@@ -40,14 +44,26 @@ public class FTLogAdapter extends ArrayAdapter<FTNotification> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View vwTodoTaskVisual = convertView;
+        View vwNotificationVisual = convertView;
 
-        if (vwTodoTaskVisual == null) {
+        if (vwNotificationVisual == null) {
             LayoutInflater inflater = ((Activity) m_cntxtCurrContext).getLayoutInflater();
-            vwTodoTaskVisual = inflater.inflate(R.layout.ft_log_item, parent, false);
+            vwNotificationVisual = inflater.inflate(R.layout.ft_log_item, parent, false);
         }
+        FTNotification ntfCurrentlyInserted = m_arrNotifications.get(position);
+        TextView txtvwNotifContent = (TextView) vwNotificationVisual.findViewById(R.id.EntryContent);
+        TextView txtvwNotifTimeStamp = (TextView) vwNotificationVisual.findViewById(R.id.EntryTimeStamp);
+        txtvwNotifContent.setText(ConstructNotificationDisplay(ntfCurrentlyInserted));
 
-        return vwTodoTaskVisual;
+        return vwNotificationVisual;
+    }
+
+    private String ConstructNotificationDisplay(FTNotification p_ntfDataContainer) {
+        return String.format(NOTIFICATION_CONTENT_FORMAT, p_ntfDataContainer.getSubjectName(), getNotificationActionString(p_ntfDataContainer), p_ntfDataContainer.getSubjectName());
+    }
+
+    private String getNotificationActionString(FTNotification p_ntfDataContainer) {
+        return p_ntfDataContainer.getType() == FTNotification.FTNotifStateENUM.ARRIVAL ? NOTIFICATION_ARRIVED_AT_SEGMENT : NOTIFICATION_LEFT_SEGMENT;
     }
 
 }

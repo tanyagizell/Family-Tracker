@@ -28,14 +28,19 @@ public class FTNotification implements Parcelable {
     private String m_strXCoord;
     private String m_strYCoord;
     private int m_nIdInNotifMgr;
+    private String m_strNotifSubjectName;
+    //Possible member ,not necessarily initialized
+    private String m_strNotifLocName;
 
 
-    public FTNotification(String p_strType, String p_strTimeStamp, String p_strCoord, int p_nNotifMgrId) {
+    public FTNotification(String p_strType, String p_strTimeStamp, String p_strCoord, int p_nNotifMgrId, String p_strSubjectName) {
         m_enmType = p_strType.equals(DB_REP_NOTIF_TYPE_ARRIVED) ? FTNotifStateENUM.ARRIVAL : FTNotifStateENUM.DEPARTURE;
         //TODO check what parsing is needed
         m_dtTimeStamp = convertPushDateToAppDate(p_strTimeStamp);
         AssignXYCoords(p_strCoord);
         m_nIdInNotifMgr = p_nNotifMgrId;
+        m_strNotifSubjectName = p_strSubjectName;
+        m_strNotifLocName = "";
     }
 
     protected FTNotification(Parcel in) {
@@ -45,6 +50,8 @@ public class FTNotification implements Parcelable {
         m_strXCoord = in.readString();
         m_strYCoord = in.readString();
         m_nIdInNotifMgr = in.readInt();
+        m_strNotifSubjectName = in.readString();
+        m_strNotifLocName = in.readString();
     }
 
     public FTNotifStateENUM getType() {
@@ -90,6 +97,19 @@ public class FTNotification implements Parcelable {
         dest.writeString(m_strXCoord);
         dest.writeString(m_strYCoord);
         dest.writeInt(m_nIdInNotifMgr);
+        dest.writeString(m_strNotifSubjectName);
+    }
+
+    public String getSubjectName() {
+        return m_strNotifSubjectName;
+    }
+
+    public String getNotificationLocationName() {
+        return m_strNotifLocName;
+    }
+
+    public void setNotificationLocationName(String m_strNotifLocName) {
+        this.m_strNotifLocName = m_strNotifLocName;
     }
 
     public enum FTNotifStateENUM {
