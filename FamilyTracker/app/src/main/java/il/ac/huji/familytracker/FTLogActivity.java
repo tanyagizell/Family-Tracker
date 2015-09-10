@@ -27,7 +27,6 @@ public class FTLogActivity extends ActionBarActivity {
         _dsNotificationsRetriever.close();
         _logEntriesAdapter = new FTLogAdapter(this, m_arrNotifications);
         lvNotificationsDisplay.setAdapter(_logEntriesAdapter);
-
     }
 
 

@@ -54,12 +54,12 @@ public class FTLogAdapter extends ArrayAdapter<FTNotification> {
         TextView txtvwNotifContent = (TextView) vwNotificationVisual.findViewById(R.id.EntryContent);
         TextView txtvwNotifTimeStamp = (TextView) vwNotificationVisual.findViewById(R.id.EntryTimeStamp);
         txtvwNotifContent.setText(ConstructNotificationDisplay(ntfCurrentlyInserted));
-
+        txtvwNotifTimeStamp.setText(ntfCurrentlyInserted.getTimeStamp().toString());
         return vwNotificationVisual;
     }
 
     private String ConstructNotificationDisplay(FTNotification p_ntfDataContainer) {
-        return String.format(NOTIFICATION_CONTENT_FORMAT, p_ntfDataContainer.getSubjectName(), getNotificationActionString(p_ntfDataContainer), p_ntfDataContainer.getSubjectName());
+        return String.format(NOTIFICATION_CONTENT_FORMAT, p_ntfDataContainer.getSubjectName(), getNotificationActionString(p_ntfDataContainer), p_ntfDataContainer.getNotificationLocationDisplayName());
     }
 
     private String getNotificationActionString(FTNotification p_ntfDataContainer) {

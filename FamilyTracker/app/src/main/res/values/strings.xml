@@ -35,4 +35,7 @@
     <string name="Extras_Key_Current_Member">CurrMember</string>
     <string name="title_activity_ftmaps">Map</string>
 
+    <!-- Log Activity-->
+    <string name="Log_Activity_Header">recent activity</string>
+
 </resources>

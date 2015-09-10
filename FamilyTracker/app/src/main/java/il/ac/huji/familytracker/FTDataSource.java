@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class FTDataSource {
 
-    public static final String APP_DATETIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
+    public static final String APP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     private static final String SINGLE_COLUMN_VALUE_CONDITION = "%s = ?";
     SQLiteDatabase _db;
     FTDBHelper _dbHelper;
@@ -58,8 +58,8 @@ public class FTDataSource {
     }
 
     private FTNotification BuildNotificationFromRecord(Cursor crsrDataRetriever) {
-        int nNotifMgr = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_NTF_MGR_ID));
-        String strCoord = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_COORD));
+        int nNotifMgr = crsrDataRetriever.getInt(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_FAMILY_ID));
+        String strCoord = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_LOC_DISPLAY));
         String strTimeStamp = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_TIME_STAMP));
         String strType = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_TYPE));
         String strSubject = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.NOTIFICATION_COLUMN_SUBJECT_NAME));
@@ -69,9 +69,9 @@ public class FTDataSource {
     public void InsertNotification(FTNotification p_ntfToInsert) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.NOTIFICATION_COLUMN_TYPE, p_ntfToInsert.getType() == FTNotification.FTNotifStateENUM.ARRIVAL ? FTNotification.DB_REP_NOTIF_TYPE_ARRIVED : FTNotification.DB_REP_NOTIF_TYPE_DEFARTED);
-        values.put(FTDBHelper.NOTIFICATION_COLUMN_COORD, FormSingleCoordVal(p_ntfToInsert));
+        values.put(FTDBHelper.NOTIFICATION_COLUMN_LOC_DISPLAY, p_ntfToInsert.getNotificationLocationDisplayName());
         values.put(FTDBHelper.NOTIFICATION_COLUMN_TIME_STAMP, ProduceDateForDB(p_ntfToInsert.getTimeStamp()));
-        values.put(FTDBHelper.NOTIFICATION_COLUMN_NTF_MGR_ID, p_ntfToInsert.getIdInNotifMgr());
+        values.put(FTDBHelper.NOTIFICATION_COLUMN_FAMILY_ID, p_ntfToInsert.getRelaventFamilyId());
         values.put(FTDBHelper.NOTIFICATION_COLUMN_SUBJECT_NAME, p_ntfToInsert.getSubjectName());
 // insert the row
         long id = _db.insert(FTDBHelper.NOTIFICATION_TABLE_NAME, null, values);
@@ -84,9 +84,6 @@ public class FTDataSource {
         return dateFormat.format(p_dtDateToConvert);
     }
 
-    private String FormSingleCoordVal(FTNotification p_ntfToInsert) {
-        return p_ntfToInsert.getXCoord() + ',' + p_ntfToInsert.getYCoord();
-    }
 
 
     //Families table methods
