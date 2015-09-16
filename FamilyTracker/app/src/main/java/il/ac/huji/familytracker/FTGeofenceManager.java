@@ -1,6 +1,13 @@
 package il.ac.huji.familytracker;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,37 +16,85 @@ import java.util.List;
  * Created by Tanyagizell on 01/09/2015.
  *
  *
- * This class manages the application's Geofence interactions
+ * This class manages the application's Geofence interactions. Since there should be only one such
+ * Manager, this class implements singleton desing pattern
  */
 public class FTGeofenceManager {
 
 
-    private static final double GEOFENCE_RADIUS_IN_METERS = 200;
+    //constants
+    private static final float GEOFENCE_RADIUS_IN_METERS = 200;
 
+    //instance
+    private static FTGeofenceManager ftGeofenceManager = new FTGeofenceManager();
 
-    List<Geofence.Builder> geofenceList;
+    //context TODO decide context
+    Context context;
+    private GoogleApiClient apiClient;
+    private PendingIntent pendingIntent;
 
-    public FTGeofenceManager()
+    //geofence list
+    private  List<Geofence> geofenceList;
+
+    private FTGeofenceManager()
     {
-        geofenceList = new ArrayList<Geofence.Builder>();
+        geofenceList = new ArrayList<Geofence>();
+        //api client
+        apiClient =  new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API)
+//                .addConnectionCallbacks(context) //TODO ?
+//                .addOnConnectionFailedListener(context) //TODO ?
+                .build();
+
     }
 
-    public void addGeofence(String id, double lat, double lng)
+    /* Static 'instance' method */
+    public static FTGeofenceManager getInstance( ) {
+        return ftGeofenceManager;
+    }
+
+    public void createGeofence(String id, double lat, double lng)
     {
-        geofenceList.add(new Geofence.Builder());
-                // Set the request ID of the geofence. This is a string to identify this
-//                // geofence.
-//                .setRequestId(id)
-//
-//                .setCircularRegion(
-//                       lat,
-//                       lng,
-//                       GEOFENCE_RADIUS_IN_METERS
-//                )
-//                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-//                        Geofence.GEOFENCE_TRANSITION_EXIT)
-//                .build());
+
+        Geofence.Builder GFBuilder = new Geofence.Builder();
+
+        GFBuilder.setRequestId(id);
+        GFBuilder.setCircularRegion(lat,lng,GEOFENCE_RADIUS_IN_METERS);
+//        GFBuilder.setExpirationDuration(2000000);\\TODO need this?
+        GFBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT);
+        geofenceList.add(GFBuilder.build());
+
+    }
+
+    public GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
+    }
+
+    public PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (pendingIntent != null) {
+            return pendingIntent;
+        }
+        Intent intent = new Intent(context, FTGeofenceListenerService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        return PendingIntent.getService(context, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+    }
+
+    public GoogleApiClient getGoogleApiClient(){
+        return apiClient;
+    }
+
+    public void stopGeofence(){
+        LocationServices.GeofencingApi.removeGeofences(
+                apiClient,
+                // This is the same pending intent that was used in addGeofences().
+                pendingIntent);
+//        ).setResultCallback(this); // Result processed in onResult().
     }
 
 

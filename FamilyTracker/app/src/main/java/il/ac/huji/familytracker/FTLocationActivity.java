@@ -48,8 +48,9 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
     int familyID=0;
 
-    ArrayList<String> followersList; //followers list
-    ArrayList<String> familyMembers;
+    ArrayList<FamilyMember> followersList; //followers list
+    ArrayList<String> followerNamesList;
+    ArrayList<FamilyMember> familyMembers;
     ArrayAdapter<String> followerAdapter;
 
     LatLng addrLatLng;
@@ -65,7 +66,8 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
     Button addBtn; //adding new followers
     Button mapViewBtn; //Button to open map view for the location
     Button searchBtn;
-    EditText edtTxt;
+    Button okBtn;
+    EditText locNameEdtText;
     AutoCompleteTextView ACtxtView;
 
 
@@ -74,7 +76,8 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftlocation);
 
-        dataSrc = new FTDataSource(this);
+        //TODO get family id
+
 
         //get location  locations activity
 //        Intent intent = getIntent();
@@ -84,22 +87,24 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         String temploc ="";
         location = new FTLocation(temploc,temploc,temploc,0,0);
 
-        //TODO read family members from DB
-        familyMembers = new ArrayList<String>();
 
-
+        dataSrc = new FTDataSource(this);
+        dataSrc.OpenToRead();
+        familyMembers = dataSrc.GetFamilyMembersFromDB(familyID);
 
 
 
         /*** Widgets ***/
         //followers list
 
-        dataSrc.GetFamilyMembersRegisteredForLoc(location.getID());
-        followersList = new ArrayList<String>();
+        followersList = dataSrc.GetFamilyMembersRegisteredForLoc(location.getID());
+        dataSrc.close();
+
+        followerNamesList = new ArrayList<String>();
 
         followerListView = (ListView) findViewById(R.id.followersListView);
         followerAdapter=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, followersList);
+                android.R.layout.simple_list_item_1, followerNamesList);
         followerListView.setAdapter(followerAdapter);
         followerListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -109,7 +114,19 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
             }
         });
 
-        //mp view button
+
+        //ok button
+        okBtn = (Button) findViewById(R.id.okButton);
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                sendLocation(view);
+
+            }
+        });
+
+        //map view button
         mapViewBtn = (Button) findViewById(R.id.mapViewButton);
         mapViewBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -118,6 +135,8 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
             }
         });
 
+        //location name Edit text
+        locNameEdtText = (EditText) findViewById(R.id.locationNameEditText);
 
 
         //add button
@@ -126,7 +145,6 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
             public void onClick(View v) {
 
                 showDialog(v);
-                //TODO Add a follower
             }
         });
 
@@ -167,11 +185,16 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
     public void showDialog(View v){
 
+
+        ArrayList<String> familyMemberNames = new ArrayList<String>();
+        for(int i=0; i<familyMembers.size();i++){
+            familyMemberNames.add(familyMembers.get(i).getName());
+        }
+        //copy family member names
         FragmentManager manager = getFragmentManager();
 
         FTDialogFragment dialog = new FTDialogFragment();
-        familyMembers.add("ba");
-        dialog.setItemsList(familyMembers);
+        dialog.setItemsList(familyMemberNames);
         dialog.show(manager, "dialog");
     }
 
@@ -227,13 +250,42 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         return latLng;
     }
 
+
+    public void sendLocation(View v){
+        String locName = locNameEdtText.getText().toString();
+        location.setLocationName(locName);
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(FTFamilyLocationsActivity.LOCATION_MESSAGE,location);
+
+        if (locName.isEmpty()){
+            setResult(RESULT_CANCELED,returnIntent);
+        }
+        else {
+            setResult(RESULT_OK,returnIntent);
+        }
+
+
+
+        finish();
+
+    }
+
     @Override
     public void onDialogItemSelect(int position) {
 
-        followersList.add(familyMembers.get(position)); //add follower to list
-        followerAdapter.notifyDataSetChanged(); //notify adapter
-        dataSrc.InsertMemberRegistrationToLocation(location.getID(),position);
 
+        //TODO send notification to create geofence
+
+        followersList.add(familyMembers.get(position)); //add follower to list
+        followerNamesList.add(familyMembers.get(position).getName());
+        followerAdapter.notifyDataSetChanged(); //notify adapter
+        dataSrc.OpenToWrite();
+        dataSrc.InsertMemberRegistrationToLocation(location.getID(),familyMembers.get(position).getMemberId());
+        dataSrc.close();
     }
+
+
+
 }
 

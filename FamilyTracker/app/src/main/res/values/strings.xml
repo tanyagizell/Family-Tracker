@@ -24,6 +24,8 @@
     <!-- Location Activity -->
     <string name="address_text">Address</string>
     <string name="followers_text">Followers</string>
+    <string name="location_name_text">Name</string>
+    <string name="ok_button_text">OK</string>
 
     <!-- Family member activity -->
     <string name="Activity_Header_Content_Create_Member">Input Member Data</string>

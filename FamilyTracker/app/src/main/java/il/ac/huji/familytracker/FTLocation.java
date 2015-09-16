@@ -74,6 +74,7 @@ public class FTLocation implements Parcelable {
     public void setLocationCoordinates(String m_strCoord) {
          m_strCoord = m_strCoord;
     }
+    public void setLocationName(String name){m_strLocName = name;}
 
 
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,11 +23,12 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
      ***** Constants ******
      ********************/
     public static final String LOCATION_MESSAGE = "il.ac.huji.familytracker.MESSAGE";
+    public static final String TAG = "LOCATIONS_ACTIVITY";
 
     /*********************
      ***** Globals ******
      ********************/
-    int familyID //the family ID
+    int familyID; //the family ID
 
     ArrayList<FTLocation> _locations;
     ArrayList<String> _locNames;
@@ -62,8 +64,8 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
                 //add new location to DB
                 String tempStr= "temp";
 
-                /*int locId = */dataSource.AddLocationToFamily(tempStr,tempStr,familyID,tempStr); //get id for new location
-                FTLocation newLoc = new FTLocation(locId);
+                int locId = dataSource.AddLocationToFamily(tempStr,tempStr,familyID,tempStr); //get id for new location
+                FTLocation newLoc = new FTLocation(locId,familyID);
 
                 Intent intent = new Intent(view.getContext(), FTLocationActivity.class);
                 intent.putExtra(LOCATION_MESSAGE,newLoc); //send the location to the next activity
@@ -94,16 +96,19 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
         if (requestCode == 1) {
             if(resultCode == RESULT_OK){
                 //todo update Location in DB
-                FTLocation newLoc = data.getParcelableExtra("LOCATION_MESSAGE");
+                FTLocation newLoc = data.getParcelableExtra(LOCATION_MESSAGE);
                 _locations.add(newLoc);
                 _locNames.add(newLoc.getLocationName());
+                String logOut = "new location " + newLoc.getLocationAddr();
+                Log.v(TAG,"new location: ");
 
 
             }
             if (resultCode == RESULT_CANCELED) {
                 //Write your code if there's no result
-                FTLocation canceledLoc = data.getParcelableExtra("LOCATION_MESSAGE");
+                FTLocation canceledLoc = data.getParcelableExtra(LOCATION_MESSAGE);
                 dataSource.removeLocation(canceledLoc.getID());
+                Log.v(TAG,"canceled");
 
             }
         }

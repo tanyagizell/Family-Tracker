@@ -1,8 +1,16 @@
 package il.ac.huji.familytracker;
 
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.media.JetPlayer;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -20,8 +28,21 @@ public class FTNotificationParser {
         CREATE_GEOFENCE, GEOFENCE_ALERT, CURRENT_LOC_REQUEST, CURRENT_LOC_RESPONSE
     };
 
+
     //notification data keys
     private static final String NOTIFICATION_TITLE = "alert";
+    private static final String COORDINATES_TITLE = "location";
+
+    //parsing indices
+    private static final int LAT_INDEX = 0;
+    private static final int LNG_INDEX = 1;
+
+
+    /*********************
+     ***** Globals *****
+     ********************/
+
+    Context context; // TODO need to decide what the context is
 
 
     /* Function: parseNotification
@@ -31,11 +52,11 @@ public class FTNotificationParser {
 
         String notificationType ="";
         try {
-            notificationType = jsonObject.getString("alert");
+            notificationType = jsonObject.getString(NOTIFICATION_TITLE);
         }
 
         catch (Exception e){
-
+            //TODO exception
         }
 
         switch (enmNotificationTypes.valueOf(notificationType))
@@ -62,7 +83,41 @@ public class FTNotificationParser {
     *  "location":"lat,lang"
     * */
     private static void parseCreateGeofence(JSONObject jsonObject){
-        //TODO
+        //TODO finish
+
+
+        //get access to geofence manager
+        FTGeofenceManager GFManager = FTGeofenceManager.getInstance();
+
+        String latlng = "";
+        String id = ""; //TODO id?
+
+        try {
+            latlng = jsonObject.getString("location");
+            String[] latLngStrArray = latlng.split(",");
+            Double lat = Double.parseDouble(latLngStrArray[LAT_INDEX]);
+            Double lng = Double.parseDouble(latLngStrArray[LNG_INDEX]);
+
+            GFManager.createGeofence(id, lat, lng);
+
+            GeofencingRequest gr = GFManager.getGeofencingRequest();
+            PendingIntent pi = GFManager.getGeofencePendingIntent();
+
+            GoogleApiClient googleApiClient = GFManager.getGoogleApiClient();
+
+
+            LocationServices.GeofencingApi.addGeofences(googleApiClient,gr,pi);
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
     };
 
     /*Function: parseGeofenceAlert

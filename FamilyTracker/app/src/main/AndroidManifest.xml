@@ -74,6 +74,7 @@ zz
             android:name=".FTGeofenceListenerService"
             android:exported="false" >
         </service>
+
         <service
             android:name=".FTAlertListenerService"
             android:exported="false" >
