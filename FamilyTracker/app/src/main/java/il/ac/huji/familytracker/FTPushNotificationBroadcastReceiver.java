@@ -29,7 +29,7 @@ public class FTPushNotificationBroadcastReceiver extends ParsePushBroadcastRecei
     protected void onPushReceive(Context context, Intent intent) {
         m_dsLocalDataAccessor = new FTDataSource(context);
         m_dsLocalDataAccessor.OpenToRead();
-        Boolean blnIsAppOn = m_dsLocalDataAccessor.GetStaticReceiverStatus();
+        Boolean blnIsAppOn = m_dsLocalDataAccessor.GetAppActivationStatus();
         if (!blnIsAppOn) {
 
         }
