@@ -8,6 +8,8 @@ import android.util.Log;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -65,7 +67,26 @@ public class FTGeofenceListenerService extends IntentService {
 
     }
 
+    /*
+    * Funcion: sendNotification
+    *
+    * Creates a geofence alrat with the JSON structure :
+    *   "alert":"GEOFENCE_ALERT"
+    *   "location":"lat,lang"
+    *   "action":"departure/arrival"
+    *   "sender_phone":"phone number"
+    *   "timestamp":"date and time"
+    *  And sends it to the followers of the location corresponding to
+    *  the given geofence
+    * */
     private void sendNotification(String geofenceTransitionDetails) {
+
+
+        //create a JSONObject to to hold the notification content
+        JSONObject jsonObject = new JSONObject();
+
+
+
         //TODO send notification
     }
 

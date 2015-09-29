@@ -44,6 +44,7 @@ public class FTGeofenceManager {
                 .addApi(LocationServices.API)
 //                .addConnectionCallbacks(context) //TODO ?
 //                .addOnConnectionFailedListener(context) //TODO ?
+                .addApi(LocationServices.API)
                 .build();
 
     }

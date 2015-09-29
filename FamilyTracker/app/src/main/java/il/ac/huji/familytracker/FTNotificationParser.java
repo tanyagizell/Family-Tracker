@@ -4,6 +4,7 @@ package il.ac.huji.familytracker;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.media.JetPlayer;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,6 +27,7 @@ public class FTNotificationParser {
     //notification data keys
     private static final String NOTIFICATION_TITLE = "alert";
     private static final String COORDINATES_TITLE = "location";
+    private static final String PHONE_NUMBER_TITLE = "sender phone";
 
     //parsing indices
     private static final int LAT_INDEX = 0;
@@ -157,6 +159,50 @@ public class FTNotificationParser {
     * */
     private static void parseCurrentLocRequest(JSONObject jsonObject) {
         //TODO handle custom events
+
+        String requetingNumber = "";
+        try {
+           requetingNumber = jsonObject.getString(PHONE_NUMBER_TITLE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        FTGeofenceManager gfm = FTGeofenceManager.getInstance();
+        GoogleApiClient apiClient = gfm.getGoogleApiClient();
+
+        //TODO might have to do this on connect
+        Location loc = LocationServices.FusedLocationApi.getLastLocation(
+                apiClient);
+
+        //Make the response
+        String locStr = "";
+        double lat = loc.getLatitude();
+        double lng = loc.getLongitude();
+        locStr+= lat + "," + lng;
+
+        String currentNumber = ""; //TODO get phone number?
+        try {
+
+            //build a response with the structure
+            /* "alert":"CURRENT_LOC_RESPONSE"
+            * "ReturnValid":"boolean"
+            * if returnValid is true
+            * "location":"lat,lang"
+            * "sender_phone":"phone number"
+            */
+
+            //create a Json object the hold the content of the response
+            JSONObject respObj = new JSONObject();
+            respObj.put(NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CURRENT_LOC_RESPONSE);
+            respObj.put("ReturnValid",true); //TODO ? what is this
+            respObj.put(COORDINATES_TITLE,locStr);
+            respObj.put(PHONE_NUMBER_TITLE,currentNumber);
+
+            //TODO send notification with result
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
     }
 
