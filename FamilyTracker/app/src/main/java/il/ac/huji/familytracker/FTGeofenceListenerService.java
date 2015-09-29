@@ -8,8 +8,10 @@ import android.util.Log;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,13 +83,41 @@ public class FTGeofenceListenerService extends IntentService {
     * */
     private void sendNotification(String geofenceTransitionDetails) {
 
+        //todo parse geofenceTransitionDetails;
+        String loc = ""; //todo get loc
+        String phoneNumber = ""; //todo get phone number?
+        String action = ""; //todo getaction
+        String time = ""; //todo get time
 
+        try {
         //create a JSONObject to to hold the notification content
-        JSONObject jsonObject = new JSONObject();
+        JSONObject notificationObj = new JSONObject();
+
+            notificationObj.put(FTNotificationParser.NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.GEOFENCE_ALERT);
+            notificationObj.put(FTNotificationParser.COORDINATES_TITLE,loc);
+            notificationObj.put(FTNotificationParser.GEOFENCE_ACTION_TITLE,action);
+            notificationObj.put(FTNotificationParser.PHONE_NUMBER_TITLE,phoneNumber);
+            notificationObj.put(FTNotificationParser.TIMESTAMP_TITLE,time);
 
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        //TODO send notification
+        int locID = 0; //todo get id of relevant location
+
+        FTDataSource dataSource = new FTDataSource(this);
+
+        //read followers from DB
+        dataSource.OpenToRead();
+        ArrayList<FamilyMember> followers = dataSource.GetFamilyMembersRegisteredForLoc(locID);
+        dataSource.close();
+
+        //send the Geofence alert to each one of the follower, if there are any
+        for (int i = 0; i<followers.size(); i++){
+            //TODO send notification
+        }
+
     }
 
     private String getGeofenceTransitionDetails(FTGeofenceListenerService ftGeofenceListenerService, int geofenceTransition, List triggeringGeofences) {

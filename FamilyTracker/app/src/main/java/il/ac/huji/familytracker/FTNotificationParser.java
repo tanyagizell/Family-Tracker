@@ -25,9 +25,11 @@ import java.util.ArrayList;
  */
 public class FTNotificationParser {
     //notification data keys
-    private static final String NOTIFICATION_TITLE = "alert";
-    private static final String COORDINATES_TITLE = "location";
-    private static final String PHONE_NUMBER_TITLE = "sender phone";
+    public static final String NOTIFICATION_TITLE = "alert";
+    public static final String COORDINATES_TITLE = "location";
+    public static final String PHONE_NUMBER_TITLE = "sender phone";
+    public static final String GEOFENCE_ACTION_TITLE = "action";
+    public static final String TIMESTAMP_TITLE = "timestamp";
 
     //parsing indices
     private static final int LAT_INDEX = 0;
