@@ -21,14 +21,18 @@ import org.json.JSONObject;
  * Handles applications push notifications
  */
 public class FTPushNotificationBroadcastReceiver extends ParsePushBroadcastReceiver{
-
-
-
-
-
     private static final int NOTIFICATION_ID = 25;
+
+    private FTDataSource m_dsLocalDataAccessor;
+
     @Override
     protected void onPushReceive(Context context, Intent intent) {
+        m_dsLocalDataAccessor = new FTDataSource(context);
+        m_dsLocalDataAccessor.OpenToRead();
+        Boolean blnIsAppOn = m_dsLocalDataAccessor.GetStaticReceiverStatus();
+        if (!blnIsAppOn) {
+
+        }
         super.onPushReceive(context, intent);
         CharSequence text = "push recieved";
         int duration = Toast.LENGTH_SHORT;

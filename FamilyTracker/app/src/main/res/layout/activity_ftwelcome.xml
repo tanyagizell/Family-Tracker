@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -13,12 +14,40 @@
         android:text="@string/hello_world" />
 
     <LinearLayout
+        android:id="@+id/lnrExistingFamiliesGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvFamiliesViewHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ListView
+            android:id="@+id/lvFamilies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></ListView>
+
+        <Button
+            android:id="@+id/btnAddFamily"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/lnrShortLogViewGroup"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></LinearLayout>
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/lvShortLogView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></ListView>
+
+        <Button
+            android:id="@+id/btnOpenLogActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </LinearLayout>

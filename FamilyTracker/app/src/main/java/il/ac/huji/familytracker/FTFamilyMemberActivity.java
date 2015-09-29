@@ -12,8 +12,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.ParsePush;
 
-public class FTFamilyMemberActivity extends ActionBarActivity {
+
+public class FTFamilyMemberActivity extends FTNotifiableActivity {
 
     //TODO when leaving the activity, validate name & number
 
@@ -131,6 +133,8 @@ public class FTFamilyMemberActivity extends ActionBarActivity {
     }
 
     private void OpenMapHandler(View p_vwCurrentCallbackData) {
+        //TODO send request for current location -opening of activity done from onreceive
+
         //TODO use intent of map and coordinates from service , or from the user data loaded to activity
     }
 
@@ -149,6 +153,10 @@ public class FTFamilyMemberActivity extends ActionBarActivity {
     }
 
     void OpenMemberEditWindow(View p_vwCurrentCallbackData) {
+        //TODO finish-started before uploading to work on this
+        Intent intntOnEdit = new Intent(getBaseContext(), FTFamilyMemberActivity.class);
+        intntOnEdit.putExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
+        intntOnEdit.putExtra((String) getResources().getText(R.string.Extras_Key_Current_Member), _currentMember);
 
     }
     @Override

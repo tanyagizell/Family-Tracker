@@ -1,5 +1,6 @@
 package il.ac.huji.familytracker;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -102,6 +103,45 @@ public class FTDBHelper extends SQLiteOpenHelper {
     public static final String MEMBER_TO_PLACE_COLUMN_MEMBER_ID = "MEMBER";
     public static final String MEMBER_TO_PLACE_COLUMN_PLACE_ID = "PLACE";
     public static final String MEMBER_TO_PLACE_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", MEMBER_TO_PLACE_TABLE_NAME, MEMBER_TO_PLACE_COLUMN_PLACE_ID, MEMBER_TO_PLACE_COLUMN_MEMBER_ID);
+    //current user table constants
+    public static final String CURR_USER_TABLE_NAME = "currentuser";
+    public static final String CURR_USER_COLUMN_NAME = "NAME";
+    public static final String CURR_USER_COLUMN_PHONE = "PHONE";
+    public static final String CURR_USER_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", CURR_USER_TABLE_NAME, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE);
+    public static final String CURR_USER_COLUMN_ID = "ID";
+    private final String CURR_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s  TEXT NOT NULL," +
+                    "%s  TEXT NOT NULL);", CURR_USER_TABLE_NAME,
+            CURR_USER_COLUMN_ID,
+            CURR_USER_COLUMN_NAME,
+            CURR_USER_COLUMN_PHONE);
+    public static final String[] CURR_USER_TABLE_DATA_COLUMNS = {CURR_USER_COLUMN_ID, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE};
+    //authorized users table constants
+    public static final String AUTH_USER_TABLE_NAME = "authorizedusers";
+    public static final String AUTH_USER_COLUMN_PHONE = "PHONE";
+    public static final String AUTH_USER_INSERT_COMMAND = String.format("INSERT INTO  %s (%s) VALUES (?)", AUTH_USER_TABLE_NAME, AUTH_USER_COLUMN_PHONE);
+    public static final String AUTH_USER_COLUMN_ID = "ID";
+    private final String AUTH_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s  TEXT NOT NULL);", CURR_USER_TABLE_NAME,
+            AUTH_USER_COLUMN_ID,
+            AUTH_USER_COLUMN_PHONE);
+    public static final String[] AUTH_USER_TABLE_DATA_COLUMNS = {AUTH_USER_COLUMN_ID, AUTH_USER_COLUMN_PHONE};
+    //app required table constants
+    public static final String APP_REQ_TABLE_NAME = "apprequired";
+    public static final String APP_REQ_COLUMN_IS_FIRST_TIME = "IS_FIRST_TIME";
+    public static final String APP_REQ_COLUMN_IS_APP_ON = "IS_APP_ON";
+    public static final String APP_REQ_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", APP_REQ_TABLE_NAME, APP_REQ_COLUMN_IS_FIRST_TIME, APP_REQ_COLUMN_IS_APP_ON);
+    public static final String APP_REQ_COLUMN_ID = "ID";
+    private final String APP_REQ_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s  BOOLEAN NOT NULL," +
+                    "%s  BOOLEAN NOT NULL);", APP_REQ_TABLE_NAME,
+            APP_REQ_COLUMN_ID,
+            APP_REQ_COLUMN_IS_FIRST_TIME,
+            APP_REQ_COLUMN_IS_APP_ON);
+    public static final String[] APP_REQ_TABLE_DATA_COLUMNS = {APP_REQ_COLUMN_ID, APP_REQ_COLUMN_IS_FIRST_TIME, APP_REQ_COLUMN_IS_APP_ON};
     private static final String MEMBER_TO_PLACE_COLUMN_REGISTRATION_ID = "ID";
     private final String MEMBER_TO_PLACE_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -130,7 +170,17 @@ public class FTDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(FAMILY_MEMBERS_TABLE_CREATION);
         sqLiteDatabase.execSQL(PLACES_TABLE_CREATION);
         sqLiteDatabase.execSQL(MEMBER_TO_PLACE_TABLE_CREATION);
+        sqLiteDatabase.execSQL(CURR_USER_TABLE_CREATION);
+        CreateAndInitAppReqTable(sqLiteDatabase);
 //        super.onCreate();
+    }
+
+    private void CreateAndInitAppReqTable(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL(APP_REQ_TABLE_CREATION);
+        ContentValues Values = new ContentValues();
+        Values.put(APP_REQ_COLUMN_IS_FIRST_TIME, true);
+        Values.put(APP_REQ_COLUMN_IS_APP_ON, true);
+        sqLiteDatabase.insert(APP_REQ_TABLE_NAME, null, Values);
     }
 
     @Override

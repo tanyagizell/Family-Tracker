@@ -5,11 +5,13 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-/***************************************************************************************
+/**
+ * ************************************************************************************
  * Created by Tanyagizell on 23/07/2015.
- *
+ * <p/>
  * This class represents a family object.
- ****************************************************************************************/
+ * **************************************************************************************
+ */
 public class Family implements Parcelable {
 
     @SuppressWarnings("unused")
@@ -24,6 +26,7 @@ public class Family implements Parcelable {
             return new Family[size];
         }
     };
+    private static final String FAMILY_DISPLAY_STRING_FORMAT = "%s Family";
     ArrayList<FamilyMember> _familyMembers;
     private String _familyName;
     private int _DBFamilyID;
@@ -67,5 +70,10 @@ public class Family implements Parcelable {
 
     public int getFamilyID() {
         return _DBFamilyID;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(FAMILY_DISPLAY_STRING_FORMAT, getfamilyName());
     }
 }

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -54,6 +55,22 @@ public class FTDataSource {
         }
         // make sure to close the cursor
         crsrDataRetriever.close();
+        return arrReturnItems;
+    }
+
+    public ArrayList<FTNotification> GeteMostRecentRequiredNumberOfNotifications(int p_nReqNumber) {
+        ArrayList<FTNotification> arrReturnItems = new ArrayList<>();
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.NOTIFICATION_TABLE_NAME, FTDBHelper.NOTIFICATION_TABLE_DATA_COLUMNS, null, null, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrReturnItems.add(BuildNotificationFromRecord(crsrDataRetriever));
+            crsrDataRetriever.moveToNext();
+        }
+        // make sure to close the cursor
+        crsrDataRetriever.close();
+        Collections.sort(arrReturnItems);
+        arrReturnItems = new ArrayList<FTNotification>(arrReturnItems.subList(0, Math.min(p_nReqNumber, arrReturnItems.size())));
+        Collections.sort(arrReturnItems);
         return arrReturnItems;
     }
 
@@ -136,14 +153,13 @@ public class FTDataSource {
         _db.update(FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, values, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_MEMBER_ID), arrstrUpdateArgs);
     }
 
-    public String GetMemberNameByPhone(String p_strPhone) {
-        ArrayList<String> arrReturnItems = new ArrayList<>();
+    public FamilyMember GetMemberByPhone(String p_strPhone) {
+        ArrayList<FamilyMember> arrReturnItems = new ArrayList<>();
         String[] arrstrWhereArgs = {p_strPhone};
-        String[] arrstrMemberNameCol = {FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME};
-        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, arrstrMemberNameCol, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_PHONE), arrstrWhereArgs, null, null, null, null);
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.FAMILY_MEMBERS_TABLE_NAME, FTDBHelper.FAMILY_MEMBERS_TABLE_DATA_COLUMNS, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILY_MEMBERS_COLUMN_PHONE), arrstrWhereArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
-            arrReturnItems.add(crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME)));
+            arrReturnItems.add(BuildFamilyMemberFromRecord(crsrDataRetriever));
             crsrDataRetriever.moveToNext();
         }
         crsrDataRetriever.close();
@@ -355,5 +371,38 @@ public class FTDataSource {
     public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int p_nLocId) {
         ArrayList<Integer> arrnReqMembersIds = GetIdsOfMembersRegisteredForLoc(p_nLocId);
         return GetMembersByIds(arrnReqMembersIds);
+    }
+
+    public String getLocNameByFamily(int familyId, String strLatLng) {
+        ArrayList<String> arrReturnItems = new ArrayList<>();
+        String[] arrstrWhereArgs = {Integer.toString(familyId), strLatLng};
+        String[] arrstrSelectCols = {FTDBHelper.PLACES_COLUMN_NAME};
+        Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, arrstrSelectCols, String.format("%s AND %s", String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY), String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_COORD)), arrstrWhereArgs, null, null, null, null);
+        crsrDataRetriever.moveToFirst();
+        while (!crsrDataRetriever.isAfterLast()) {
+            arrReturnItems.add(crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.PLACES_COLUMN_NAME)));
+            crsrDataRetriever.moveToNext();
+        }
+        crsrDataRetriever.close();
+        return arrReturnItems.isEmpty() ? null : arrReturnItems.get(0);
+    }
+
+    public Boolean GetAppActivationStatus() {
+        ArrayList<Boolean> arrblnRes = new ArrayList<>();
+        String[] arrstrStaticReceiverStatusCol = {FTDBHelper.APP_REQ_COLUMN_IS_APP_ON};
+        Cursor crsrRes = _db.query(false, FTDBHelper.APP_REQ_TABLE_NAME, arrstrStaticReceiverStatusCol, null, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrblnRes.add(crsrRes.getInt(crsrRes.getColumnIndex(FTDBHelper.APP_REQ_COLUMN_IS_APP_ON)) == 0 ? false : true);
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrblnRes.get(0);
+    }
+
+    public void UpdateAppState(boolean blnReceiverStatus) {
+        ContentValues Values = new ContentValues();
+        Values.put(FTDBHelper.APP_REQ_COLUMN_IS_APP_ON, blnReceiverStatus);
+        _db.update(FTDBHelper.APP_REQ_TABLE_NAME, Values, null, null);
     }
 }

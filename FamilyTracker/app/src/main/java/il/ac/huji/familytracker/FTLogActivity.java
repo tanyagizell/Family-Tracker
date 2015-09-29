@@ -9,7 +9,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 
-public class FTLogActivity extends ActionBarActivity {
+public class FTLogActivity extends FTNotifiableActivity {
 
     FTLogAdapter _logEntriesAdapter;
     FTDataSource _dsNotificationsRetriever;

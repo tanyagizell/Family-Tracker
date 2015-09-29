@@ -66,4 +66,11 @@ public class FTLogAdapter extends ArrayAdapter<FTNotification> {
         return p_ntfDataContainer.getType() == FTNotification.FTNotifStateENUM.ARRIVAL ? NOTIFICATION_ARRIVED_AT_SEGMENT : NOTIFICATION_LEFT_SEGMENT;
     }
 
+    @Override
+    public void add(FTNotification p_ntfNew) {
+        if (p_ntfNew != null) {
+            m_arrNotifications.add(p_ntfNew);
+        }
+        notifyDataSetChanged();
+    }
 }

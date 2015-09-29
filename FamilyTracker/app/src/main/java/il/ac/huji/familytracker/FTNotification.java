@@ -5,12 +5,13 @@ import android.os.Parcelable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
  * Created by Omer on 01/09/2015.
  */
-public class FTNotification implements Parcelable {
+public class FTNotification implements Parcelable, Comparable<FTNotification> {
     public static final String DB_REP_NOTIF_TYPE_ARRIVED = "ARRIVED";
     public static final String DB_REP_NOTIF_TYPE_DEFARTED = "DEPARTED";
     @SuppressWarnings("unused")
@@ -95,6 +96,11 @@ public class FTNotification implements Parcelable {
 
     public String getSubjectName() {
         return m_strNotifSubjectName;
+    }
+
+    @Override
+    public int compareTo(FTNotification ftNotification) {
+        return ftNotification.getTimeStamp().compareTo(this.getTimeStamp());
     }
 
     public enum FTNotifStateENUM {
