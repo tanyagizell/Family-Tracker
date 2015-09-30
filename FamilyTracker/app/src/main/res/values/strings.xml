@@ -11,6 +11,7 @@
     <string name="title_activity_ftfamily_member">FTFamilyMemberActivity</string>
     <string name="title_activity_ftfamily_locations">FTFamilyLocationsActivity</string>
     <string name="title_activity_ftlocation">FTLocationActivity</string>
+    <string name="title_activity_ftfamily">FTFamilyActivity</string>
 
     <!-- Parse related -->
     <string name="parse_app_id">C30gJfwJvCVWoul6oo6hXRsvqQBNQlhT9VO4Rkkx</string>
@@ -24,8 +25,10 @@
     <!-- Location Activity -->
     <string name="address_text">Address</string>
     <string name="followers_text">Followers</string>
-    <string name="location_name_text">Name</string>
+    <string name="location_name_text">Name:</string>
+    <string name="location_addr_text">Addr:</string>
     <string name="ok_button_text">OK</string>
+    <string name="location_header">Add Location</string>
 
     <!-- Family member activity -->
     <string name="Activity_Header_Content_Create_Member">Input Member Data</string>
@@ -39,5 +42,13 @@
 
     <!-- Log Activity-->
     <string name="Log_Activity_Header">recent activity</string>
+    <string name="title_activity_ftinstallation">FTInstallationActivity</string>
+    <string name="radio_child">child</string>
+    <string name="radio_parent">parent</string>
+    <string name="installation_next">next</string>
+    <string name="input_parent_number">Parent Phone Number</string>
+    <string name="add_phone_text">Add</string>
+    <string name="family_header">Add Family</string>
+
 
 </resources>

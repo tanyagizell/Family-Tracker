@@ -119,7 +119,7 @@ public class FTGeofenceListenerService extends IntentService {
 
     private String getGeofenceTransitionDetails(FTGeofenceListenerService ftGeofenceListenerService, int geofenceTransition, List triggeringGeofences) {
 
-        String details;
+        String details = "";
         //TODO parse transition to notification string
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER)

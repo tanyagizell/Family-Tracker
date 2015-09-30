@@ -22,6 +22,10 @@ public class FTParsedNotification {
         this.m_arrobjNotifArgs = m_arrobjNotifArgs;
     }
 
+    public enmNotificationTypes getNotificationType() {
+        return m_enmNotifType;
+    }
+
     /**
      * ******************
      * **** constants *****

@@ -6,10 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.media.JetPlayer;
+import android.provider.Telephony;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -184,13 +188,11 @@ public class FTNotificationParser {
         double lng = loc.getLongitude();
         locStr+= lat + "," + lng;
 
-        String currentNumber = ""; //TODO get phone number?
+        String currentNumber = ""; //TODO get phone number from db
         try {
 
             //build a response with the structure
             /* "alert":"CURRENT_LOC_RESPONSE"
-            * "ReturnValid":"boolean"
-            * if returnValid is true
             * "location":"lat,lang"
             * "sender_phone":"phone number"
             */
@@ -198,9 +200,13 @@ public class FTNotificationParser {
             //create a Json object the hold the content of the response
             JSONObject respObj = new JSONObject();
             respObj.put(NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CURRENT_LOC_RESPONSE);
-            respObj.put("ReturnValid",true); //TODO ? what is this
             respObj.put(COORDINATES_TITLE,locStr);
             respObj.put(PHONE_NUMBER_TITLE,currentNumber);
+            ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
+            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,requetingNumber);
+            ParsePush SentParseObject = new ParsePush();
+            SentParseObject.setData(respObj);
+            SentParseObject.sendInBackground();
 
             //TODO send notification with result
         } catch (JSONException e) {

@@ -21,6 +21,9 @@ import org.json.JSONObject;
  * project starter subclass. will run before any other activity
  */
 public class FTStarter extends Application{
+
+    //TODO ADD the phone number after the installation sequence
+    public static final String INSTALL_PHONE_NO_FIELD = "FTPhoneNumberField";
     FTInAppBroadcastReceiver m_pbrInAppReceiver;
     FTDataSource m_dsCreationTimeDataAccess;
     private Activity m_aCurrentActivity = null;
@@ -43,7 +46,6 @@ public class FTStarter extends Application{
         Parse.initialize(this, (String) getResources().getText(R.string.parse_app_id),
                 (String) getResources().getText(R.string.parse_client_key));
         ParseInstallation.getCurrentInstallation().saveInBackground();
-
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
@@ -109,6 +111,7 @@ public class FTStarter extends Application{
             //TODO -if geofence alert - if at log window or welcome window -update display , otherwise simply insert into DB
 
             //TODO if response to current location request -check which window we're in ,and use data to open necessery activity with received input
+            
             //TODO-if request of current location - we're in passive user - should perform actions to acquire current location and generate a response push notification containing the data
             //TODO-create geofence - implemented in the parser itself .note - check if insert a validation prior to creation ,to check
         }
