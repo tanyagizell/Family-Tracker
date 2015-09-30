@@ -11,6 +11,9 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import javax.sql.DataSource;
 
 /**
  * Created by Tanyagizell on 01/09/2015.
@@ -23,7 +26,7 @@ public class FTGeofenceManager {
 
 
     //constants
-    private static final float GEOFENCE_RADIUS_IN_METERS = 200;
+    private static final float GEOFENCE_RADIUS_IN_METERS = 50;
 
     //instance
     private static FTGeofenceManager ftGeofenceManager = new FTGeofenceManager();
@@ -32,6 +35,7 @@ public class FTGeofenceManager {
     Context context;
     private GoogleApiClient apiClient;
     private PendingIntent pendingIntent;
+    private String alertDestination; //the recipient of the GEOFENCE alerts
 
     //geofence list
     private  List<Geofence> geofenceList;
@@ -54,16 +58,17 @@ public class FTGeofenceManager {
         return ftGeofenceManager;
     }
 
-    public void createGeofence(String id, double lat, double lng)
+    public void createGeofence(double lat, double lng)
     {
+        //get an ID for geofence
+        String id = UUID.randomUUID().toString();
 
-        Geofence.Builder GFBuilder = new Geofence.Builder();
-
-        GFBuilder.setRequestId(id);
-        GFBuilder.setCircularRegion(lat,lng,GEOFENCE_RADIUS_IN_METERS);
-//        GFBuilder.setExpirationDuration(2000000);\\TODO need this?
-        GFBuilder.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT);
-        geofenceList.add(GFBuilder.build());
+        geofenceList.add(new Geofence.Builder()
+                .setRequestId(id)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setCircularRegion(lat, lng, GEOFENCE_RADIUS_IN_METERS)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .build());
 
     }
 
@@ -96,6 +101,10 @@ public class FTGeofenceManager {
                 // This is the same pending intent that was used in addGeofences().
                 pendingIntent);
 //        ).setResultCallback(this); // Result processed in onResult().
+    }
+
+    public String getAlertDestination(){
+        return alertDestination;
     }
 
 

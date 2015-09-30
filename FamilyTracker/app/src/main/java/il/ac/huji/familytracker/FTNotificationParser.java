@@ -30,6 +30,9 @@ public class FTNotificationParser {
     public static final String PHONE_NUMBER_TITLE = "sender phone";
     public static final String GEOFENCE_ACTION_TITLE = "action";
     public static final String TIMESTAMP_TITLE = "timestamp";
+    public static final String GEOFENCE_ENTER = "ENTER";
+    public static final String GEOFENCE_EXIT = "EXIT";
+
 
     //parsing indices
     private static final int LAT_INDEX = 0;
@@ -82,7 +85,8 @@ public class FTNotificationParser {
     }
 
     /*Function:
-    * "alert":"CREATE_GEOFENCE"
+    *  Handles a request to create a new Geofence which has the following JSON structure
+    *  "alert":"CREATE_GEOFENCE"
     *  "location":"lat,lang"
     * */
     private static void parseCreateGeofence(JSONObject jsonObject) {
@@ -95,7 +99,6 @@ public class FTNotificationParser {
         FTGeofenceManager GFManager = FTGeofenceManager.getInstance();
 
         String latlng = "";
-        String id = ""; //TODO id?
 
         try {
             latlng = jsonObject.getString("location");
@@ -103,7 +106,7 @@ public class FTNotificationParser {
             Double lat = Double.parseDouble(latLngStrArray[LAT_INDEX]);
             Double lng = Double.parseDouble(latLngStrArray[LNG_INDEX]);
 
-            GFManager.createGeofence(id, lat, lng);
+            GFManager.createGeofence(lat, lng);
 
             GeofencingRequest gr = GFManager.getGeofencingRequest();
             PendingIntent pi = GFManager.getGeofencePendingIntent();

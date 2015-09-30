@@ -70,16 +70,18 @@ public class FTGeofenceListenerService extends IntentService {
     }
 
     /*
-    * Funcion: sendNotification
+    * Function: sendNotification
     *
-    * Creates a geofence alrat with the JSON structure :
-    *   "alert":"GEOFENCE_ALERT"
-    *   "location":"lat,lang"
-    *   "action":"departure/arrival"
-    *   "sender_phone":"phone number"
-    *   "timestamp":"date and time"
+    * Creates a geofence alret with the followingJSON structure :
+    *
+    *       "alert":"GEOFENCE_ALERT"
+    *       "location":"lat,lang"
+    *       "action":"departure/arrival"
+    *       "sender_phone":"phone number"
+    *       "timestamp":"date and time"
+    *
     *  And sends it to the followers of the location corresponding to
-    *  the given geofence
+    *  the given Geofence
     * */
     private void sendNotification(String geofenceTransitionDetails) {
 
@@ -104,26 +106,41 @@ public class FTGeofenceListenerService extends IntentService {
             e.printStackTrace();
         }
 
-        int locID = 0; //todo get id of relevant location
 
+        //Get destination of notification (the client that needs to be notified of this notification)
         FTDataSource dataSource = new FTDataSource(this);
 
-        //read followers from DB
-        dataSource.OpenToRead();
-        ArrayList<FamilyMember> followers = dataSource.GetFamilyMembersRegisteredForLoc(locID);
-        dataSource.close();
 
-        //send the Geofence alert to each one of the follower, if there are any
-        for (int i = 0; i<followers.size(); i++){
-            //TODO send notification
-        }
+        //send the Geofence alert to the monitoring client
+        String alertDest = FTGeofenceManager.getInstance().getAlertDestination();
+        //TODO send the notification
 
     }
 
     private String getGeofenceTransitionDetails(FTGeofenceListenerService ftGeofenceListenerService, int geofenceTransition, List triggeringGeofences) {
 
-        String details = "";
+        String details;
         //TODO parse transition to notification string
+
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER)
+            details = FTNotificationParser.GEOFENCE_ENTER;
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+            details = FTNotificationParser.GEOFENCE_EXIT;
+        }
+        details += ",";
+
+
+        if (triggeringGeofences.size() == 1){
+            //TODO add to details
+        }
+
+        else {
+            //TODO might have to handle overlapping geofences
+        }
+
+
+
+
 
         return details;
     }
