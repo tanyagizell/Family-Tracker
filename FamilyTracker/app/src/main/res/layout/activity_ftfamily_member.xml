@@ -10,6 +10,34 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="1"
+        android:background="@color/wallet_holo_blue_light"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:text="@string/family_member_header"
+            android:textSize="25dp" />
+
+
+        <Button
+            android:id="@+id/btnConfirmMemberEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/ok_button_text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -61,6 +89,7 @@
         android:id="@+id/phone_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+            android:inputType="phone"
         android:text="default"
     />
     </LinearLayout>

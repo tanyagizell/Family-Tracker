@@ -49,6 +49,11 @@
     <string name="input_parent_number">Parent Phone Number</string>
     <string name="add_phone_text">Add</string>
     <string name="family_header">Add Family</string>
+    <string name="Extras_Key_Is_First_Edit_Mode">IsFirstEdit</string>
+    <string name="family_member_header">Family Member</string>
+    <string name="Extras_Key_Family_Id">MemberFamilyId</string>
+    <string name="installation_header">installation sequence</string>
+    <string name="PARSE_PHONE_ID">DeviceNotificationId</string>
 
 
 </resources>

@@ -1,16 +1,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     tools:context="il.ac.huji.familytracker.FTInstallationActivity">
 
-    <LinearLayout android:orientation="horizontal"
-        android:layout_height="0dp"
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_weight="1">
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="1"
+        android:background="@color/wallet_holo_blue_light"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:text="@string/installation_header"
+            android:textSize="25dp" />
+
+
+        <Button
+            android:id="@+id/btnConfirmInstallationData"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/ok_button_text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
@@ -20,30 +50,46 @@
             android:textSize="20dp"/>
 
         <EditText
+            android:id="@+id/phoneNumberEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
-            android:id="@+id/phoneNumberEditText"
+            android:inputType="phone"
     />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="User name"
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/UserNameInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:inputType="text" />
 
     </LinearLayout>
 
-    <LinearLayout android:orientation="horizontal"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_width="fill_parent"
-        android:layout_weight="4">
+        android:layout_weight="4"
+        android:orientation="horizontal">
 
-    <RadioGroup
+        <RadioGroup
+            android:id="@+id/authorizationRadioGrp"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/authorizationRadioGrp">
+            android:layout_height="wrap_content">
 
-        <RadioButton
+            <RadioButton
             android:id="@+id/radioParent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_parent"
             android:checked="true"
+                android:text="@string/radio_parent"
             android:textSize="20dp"/>
 
         <RadioButton
@@ -60,18 +106,18 @@
 
 
     <LinearLayout
+        android:id="@+id/passiveSection"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
-        android:id="@+id/passiveSection"
         android:orientation="vertical"
         android:visibility="invisible">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
@@ -82,33 +128,33 @@
             />
 
             <EditText
+                android:id="@+id/parentPhoneEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:id="@+id/parentPhoneEditText"/>
+                android:layout_weight="3" />
 
             <Button
+                android:id="@+id/addPhoneBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/add_phone_text"
-                android:id="@+id/addPhoneBtn"/>
-            </LinearLayout>
+                android:text="@string/add_phone_text" />
+        </LinearLayout>
 
         <ListView
+            android:id="@+id/parentsListView"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            android:id="@+id/parentsListView"></ListView>
+            android:layout_weight="3"></ListView>
 
 
     </LinearLayout>
 
     <Button
+        android:id="@+id/nextBtn"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/nextBtn"
         android:text="@string/installation_next"
         android:textSize="20dp"
 

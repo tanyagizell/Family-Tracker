@@ -107,22 +107,25 @@ public class FTDBHelper extends SQLiteOpenHelper {
     public static final String CURR_USER_TABLE_NAME = "currentuser";
     public static final String CURR_USER_COLUMN_NAME = "NAME";
     public static final String CURR_USER_COLUMN_PHONE = "PHONE";
-    public static final String CURR_USER_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", CURR_USER_TABLE_NAME, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE);
+    public static final String CURR_USER_COLUMN_STATUS = "STATUS";
+    public static final String CURR_USER_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s,%s) VALUES (?,?,?)", CURR_USER_TABLE_NAME, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE, CURR_USER_COLUMN_STATUS);
     public static final String CURR_USER_COLUMN_ID = "ID";
     private final String CURR_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s  TEXT NOT NULL," +
+                    "%s  TEXT NOT NULL," +
                     "%s  TEXT NOT NULL);", CURR_USER_TABLE_NAME,
             CURR_USER_COLUMN_ID,
             CURR_USER_COLUMN_NAME,
-            CURR_USER_COLUMN_PHONE);
-    public static final String[] CURR_USER_TABLE_DATA_COLUMNS = {CURR_USER_COLUMN_ID, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE};
+            CURR_USER_COLUMN_PHONE,
+            CURR_USER_COLUMN_STATUS);
+    public static final String[] CURR_USER_TABLE_DATA_COLUMNS = {CURR_USER_COLUMN_ID, CURR_USER_COLUMN_NAME, CURR_USER_COLUMN_PHONE, CURR_USER_COLUMN_STATUS};
     //authorized users table constants
     public static final String AUTH_USER_TABLE_NAME = "authorizedusers";
     public static final String AUTH_USER_COLUMN_PHONE = "PHONE";
     public static final String AUTH_USER_INSERT_COMMAND = String.format("INSERT INTO  %s (%s) VALUES (?)", AUTH_USER_TABLE_NAME, AUTH_USER_COLUMN_PHONE);
     public static final String AUTH_USER_COLUMN_ID = "ID";
-    private final String AUTH_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+    public static final String AUTH_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s  TEXT NOT NULL);", CURR_USER_TABLE_NAME,
             AUTH_USER_COLUMN_ID,

@@ -19,6 +19,7 @@ import java.util.Locale;
 public class FTDataSource {
 
     public static final String APP_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+    ;
     private static final String SINGLE_COLUMN_VALUE_CONDITION = "%s = ?";
     SQLiteDatabase _db;
     FTDBHelper _dbHelper;
@@ -43,8 +44,6 @@ public class FTDataSource {
         _dbHelper.close();
     }
 
-    //Notification table methods
-
     public ArrayList<FTNotification> GeteNotificationsItemsFromDB() {
         ArrayList<FTNotification> arrReturnItems = new ArrayList<>();
         Cursor crsrDataRetriever = _db.query(false, FTDBHelper.NOTIFICATION_TABLE_NAME, FTDBHelper.NOTIFICATION_TABLE_DATA_COLUMNS, null, null, null, null, null, null);
@@ -57,6 +56,8 @@ public class FTDataSource {
         crsrDataRetriever.close();
         return arrReturnItems;
     }
+
+    //Notification table methods
 
     public ArrayList<FTNotification> GeteMostRecentRequiredNumberOfNotifications(int p_nReqNumber) {
         ArrayList<FTNotification> arrReturnItems = new ArrayList<>();
@@ -100,8 +101,6 @@ public class FTDataSource {
                 APP_DATETIME_FORMAT, Locale.getDefault());
         return dateFormat.format(p_dtDateToConvert);
     }
-
-
 
     //Families table methods
     public ArrayList<Family> GetFamiliesFromDB() {
@@ -174,7 +173,6 @@ public class FTDataSource {
         String strName = crsrDataRetriever.getString(crsrDataRetriever.getColumnIndex(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME));
         return new FamilyMember(strName, strPhone, strEmail, nFamilyId, nMemberId);
     }
-
 
     //Places Table Methods
     public FTLocation GetLocationByCoordsAndFamily(String p_strCoords, int p_nFamilyId) {
@@ -262,8 +260,7 @@ public class FTDataSource {
     }
 
     //Members To Places Table Methods
-    public void InsertMemberRegistrationToLocation(int p_nLocId, int p_nMemberId)
-    {
+    public void InsertMemberRegistrationToLocation(int p_nLocId, int p_nMemberId) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID, p_nLocId);
         values.put(FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID, p_nMemberId);
@@ -303,8 +300,7 @@ public class FTDataSource {
     }
 
     // Family Members Table Methods
-    public void InsertFamilyMemberToDB(String p_strName, String p_strPhone, String p_strEmail, int p_nFamilyId)
-    {
+    public void InsertFamilyMemberToDB(String p_strName, String p_strPhone, String p_strEmail, int p_nFamilyId) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_EMAIL, p_strEmail);
         values.put(FTDBHelper.FAMILY_MEMBERS_COLUMN_NAME, p_strName);
@@ -354,8 +350,7 @@ public class FTDataSource {
         return arrstrRetVal;
     }
 
-    private String ConstructMultipleOptionsSqlClause(String p_strClauseColOfElems, boolean blnIsAnd, ArrayList<Integer> arrnClauseElems, ArrayList<String> arrstrQueryArgsOutput)
-    {
+    private String ConstructMultipleOptionsSqlClause(String p_strClauseColOfElems, boolean blnIsAnd, ArrayList<Integer> arrnClauseElems, ArrayList<String> arrstrQueryArgsOutput) {
         String strJoiningOperator = blnIsAnd ? " AND " : " OR ";
         String strIdPosQuerySegment = String.format(SINGLE_COLUMN_VALUE_CONDITION, p_strClauseColOfElems);
         arrstrQueryArgsOutput.add(Integer.toString(arrnClauseElems.get(0)));
@@ -366,7 +361,6 @@ public class FTDataSource {
 
         return strIdPosQuerySegment;
     }
-
 
     public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int p_nLocId) {
         ArrayList<Integer> arrnReqMembersIds = GetIdsOfMembersRegisteredForLoc(p_nLocId);
@@ -400,9 +394,66 @@ public class FTDataSource {
         return arrblnRes.get(0);
     }
 
+    public Boolean IsAppFirstActivation() {
+        ArrayList<Boolean> arrblnRes = new ArrayList<>();
+        String[] arrstrIsFirstTimeCol = {FTDBHelper.APP_REQ_COLUMN_IS_FIRST_TIME};
+        Cursor crsrRes = _db.query(false, FTDBHelper.APP_REQ_TABLE_NAME, arrstrIsFirstTimeCol, null, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrblnRes.add(crsrRes.getInt(crsrRes.getColumnIndex(FTDBHelper.APP_REQ_COLUMN_IS_FIRST_TIME)) == 0 ? false : true);
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrblnRes.get(0);
+    }
+
     public void UpdateAppState(boolean blnReceiverStatus) {
         ContentValues Values = new ContentValues();
         Values.put(FTDBHelper.APP_REQ_COLUMN_IS_APP_ON, blnReceiverStatus);
         _db.update(FTDBHelper.APP_REQ_TABLE_NAME, Values, null, null);
+    }
+
+    public void UpdateAppPassedInstallation() {
+        ContentValues Values = new ContentValues();
+        Values.put(FTDBHelper.APP_REQ_COLUMN_IS_FIRST_TIME, false);
+        _db.update(FTDBHelper.APP_REQ_TABLE_NAME, Values, null, null);
+    }
+
+    public void InsertCurrUserData(String p_strPhone, String p_strName, enmUserStatus p_enmUserState) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.CURR_USER_COLUMN_NAME, p_strName);
+        values.put(FTDBHelper.CURR_USER_COLUMN_PHONE, p_strPhone);
+        values.put(FTDBHelper.CURR_USER_COLUMN_STATUS, p_enmUserState.toString());
+// insert the row
+        long id = _db.insert(FTDBHelper.CURR_USER_TABLE_NAME, null, values);
+    }
+
+    public Boolean IsParentUser() {
+        ArrayList<enmUserStatus> arrblnRes = new ArrayList<>();
+        String[] arrstrUserState = {FTDBHelper.CURR_USER_COLUMN_STATUS};
+        Cursor crsrRes = _db.query(false, FTDBHelper.CURR_USER_TABLE_NAME, arrstrUserState, null, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrblnRes.add(enmUserStatus.valueOf(crsrRes.getString(crsrRes.getColumnIndex(FTDBHelper.CURR_USER_COLUMN_STATUS))));
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrblnRes.get(0) == enmUserStatus.PARENT;
+    }
+
+    public void CreateAuthUsersTable() {
+        _db.execSQL(FTDBHelper.AUTH_USER_TABLE_CREATION);
+
+    }
+
+    public void InsertAuthorized(String p_strAuthPhone) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.AUTH_USER_COLUMN_PHONE, p_strAuthPhone);
+// insert the row
+        long id = _db.insert(FTDBHelper.AUTH_USER_TABLE_NAME, null, values);
+    }
+
+    public enum enmUserStatus {
+        PARENT, CHILD
     }
 }
