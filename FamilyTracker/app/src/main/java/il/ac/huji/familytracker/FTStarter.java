@@ -28,6 +28,7 @@ public class FTStarter extends Application{
     FTDataSource m_dsCreationTimeDataAccess;
     private Activity m_aCurrentActivity = null;
     private boolean m_blnIsInAppReceiverOn;
+    public static Context _context;
 
     public Activity getCurrentActivity() {
         return m_aCurrentActivity;
@@ -54,6 +55,9 @@ public class FTStarter extends Application{
         m_pbrInAppReceiver = new FTInAppBroadcastReceiver();
         m_dsCreationTimeDataAccess = new FTDataSource(getApplicationContext());
         NotifyReceiversAppUp(m_dsCreationTimeDataAccess);
+
+        FTStarter._context = getApplicationContext();
+        FTGeofenceManager gfm = FTGeofenceManager.getInstance();//create instance
     }
 
     public void NotifyReceiversAppDown(FTDataSource m_dsActivityDataAccess) {
@@ -85,6 +89,11 @@ public class FTStarter extends Application{
             p_dsActivityDataAccess.UpdateAppState(p_blnToSetTo);
         }
         p_dsActivityDataAccess.close();
+    }
+
+
+    public static Context getAppContext() {
+        return FTStarter._context;
     }
 
     private class FTInAppBroadcastReceiver extends ParsePushBroadcastReceiver {

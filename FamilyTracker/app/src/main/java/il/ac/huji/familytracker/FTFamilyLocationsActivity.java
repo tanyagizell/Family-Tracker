@@ -15,6 +15,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 
 public class FTFamilyLocationsActivity extends ActionBarActivity {
 
@@ -28,7 +30,7 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
     /*********************
      ***** Globals ******
      ********************/
-    int familyID; //the family ID
+    int familyID = 0; //the family ID
 
     ArrayList<FTLocation> _locations;
     ArrayList<String> _locNames;
@@ -49,6 +51,11 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftfamily_locations);
 
+        //Get db access with read permissions to fill all the activity data
+
+        dataSource = new FTDataSource(this);
+        dataSource.OpenToRead();
+
 //        //TODO below
 //        get family id from parent activity
 //        Intent intent = getIntent();
@@ -60,6 +67,8 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+//                FTNotificationParser.getLastLocation();
 
                 //add new location to DB
                 String tempStr= "temp";
@@ -74,6 +83,17 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
             }
         });
 
+
+        //TODO read locations from db
+        _locations = dataSource.GetLocationsByFamily(familyID);
+        //get the location names to display in the activity
+
+        _locNames = new ArrayList<String>();
+        for (int i=0; i<_locations.size(); i++){
+           _locNames.add(_locations.get(i).getLocationName());
+        }
+
+
         locationsListView =(ListView) findViewById(R.id.locationsListView);
         _locationsAdapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, _locNames);
@@ -87,6 +107,10 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
                 return false;
             }
         });
+
+
+        //close db access
+        dataSource.close();
 
     }
 

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.location.Location;
 import android.media.JetPlayer;
 import android.provider.Telephony;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.GeofencingRequest;
@@ -42,15 +44,15 @@ public class FTNotificationParser {
     private static final int LAT_INDEX = 0;
     private static final int LNG_INDEX = 1;
 
+    //debug
+    private static final String TAG = "NOTIFICATION_PARSER";
+
 
     /**
      * ******************
      * **** Globals *****
      * ******************
      */
-
-    Context context; // TODO need to decide what the context is
-    // no use for globals since this is a static class....should be discussed
 
 
     /* Function: parseNotification
@@ -169,24 +171,16 @@ public class FTNotificationParser {
     private static void parseCurrentLocRequest(JSONObject jsonObject) {
         //TODO handle custom events
 
-        String requetingNumber = "";
+        String requestingNumber = "";
         try {
-           requetingNumber = jsonObject.getString(PHONE_NUMBER_TITLE);
+           requestingNumber = jsonObject.getString(PHONE_NUMBER_TITLE);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        FTGeofenceManager gfm = FTGeofenceManager.getInstance();
-        GoogleApiClient apiClient = gfm.getGoogleApiClient();
 
-        //TODO might have to do this on connect
-        Location loc = LocationServices.FusedLocationApi.getLastLocation(
-                apiClient);
+        String locStr = getLastLocation();
 
-        //Make the response
-        String locStr = "";
-        double lat = loc.getLatitude();
-        double lng = loc.getLongitude();
-        locStr+= lat + "," + lng;
+
 
         String currentNumber = ""; //TODO get phone number from db
         try {
@@ -203,7 +197,7 @@ public class FTNotificationParser {
             respObj.put(COORDINATES_TITLE,locStr);
             respObj.put(PHONE_NUMBER_TITLE,currentNumber);
             ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
-            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,requetingNumber);
+            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,requestingNumber);
             ParsePush SentParseObject = new ParsePush();
             SentParseObject.setData(respObj);
             SentParseObject.sendInBackground();
@@ -261,7 +255,32 @@ public class FTNotificationParser {
 
     }
 
-    ;
+    /*
+     * Gets the last known location from google api client
+     */
+    public static String getLastLocation() {
+
+        //gain access to our api client
+        FTGeofenceManager gfm = FTGeofenceManager.getInstance();
+        GoogleApiClient apiClient = gfm.getGoogleApiClient();
+
+        apiClient.connect();
+
+        //TODO might have to do this on connect
+        Location loc = LocationServices.FusedLocationApi.getLastLocation(
+                apiClient);
+
+        //Make the String
+        String locStr = "";
+        double lat = loc.getLatitude();
+        double lng = loc.getLongitude();
+        locStr+= lat + "," + lng;
+
+        Log.v(TAG,locStr);
+
+        return locStr;
+
+    }
 
 
 }

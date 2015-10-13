@@ -3,7 +3,11 @@ package il.ac.huji.familytracker;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
@@ -20,13 +24,14 @@ import javax.sql.DataSource;
  *
  *
  * This class manages the application's Geofence interactions. Since there should be only one such
- * Manager, this class implements singleton desing pattern
+ * Manager, this class implements singleton design pattern
  */
-public class FTGeofenceManager {
+public class FTGeofenceManager implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     //constants
     private static final float GEOFENCE_RADIUS_IN_METERS = 50;
+    private static final String TAG = "GEOFENCE_MANAGER";
 
     //instance
     private static FTGeofenceManager ftGeofenceManager = new FTGeofenceManager();
@@ -39,17 +44,25 @@ public class FTGeofenceManager {
 
     //geofence list
     private  List<Geofence> geofenceList;
+    private ArrayList<String> notifyLocationList;
 
     private FTGeofenceManager()
     {
+
+        context = FTStarter.getAppContext();
         geofenceList = new ArrayList<Geofence>();
+        notifyLocationList = new ArrayList<String>();
         //api client
         apiClient =  new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API)
-//                .addConnectionCallbacks(context) //TODO ?
-//                .addOnConnectionFailedListener(context) //TODO ?
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        apiClient.connect();
+
+        Log.v(TAG,"starting api client");
 
     }
 
@@ -107,5 +120,26 @@ public class FTGeofenceManager {
         return alertDestination;
     }
 
+    public void addLocationRequester(String phone_number){
+        notifyLocationList.add(phone_number);
+    }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+
+
+        Log.v(TAG, "Connected to api client");
+
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.v(TAG,"Connection failed");
+    }
 }
