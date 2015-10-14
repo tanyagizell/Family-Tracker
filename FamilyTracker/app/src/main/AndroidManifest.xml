@@ -48,6 +48,12 @@
         <activity
             android:name=".FTWelcomeActivity"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".FTHomePageActivity"
@@ -65,11 +71,7 @@ zz
         <activity
             android:name=".FTFamilyLocationsActivity"
             android:label="@string/title_activity_ftfamily_locations" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service
@@ -136,15 +138,22 @@ zz
         <activity
             android:name=".FTInstallationActivity"
             android:label="@string/title_activity_ftinstallation"
-            android:parentActivityName=".FTWelcomeActivity" >
+            android:parentActivityName=".FTWelcomeActivity"
+            android:windowSoftInputMode="adjustPan">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="il.ac.huji.familytracker.FTWelcomeActivity" />
         </activity>
+
         <activity
             android:name=".FTFamilyActivity"
             android:label="@string/title_activity_ftfamily"
             android:parentActivityName=".FTWelcomeActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="il.ac.huji.familytracker.FTWelcomeActivity" />

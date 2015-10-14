@@ -12,7 +12,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class FTFamilyMemberActivity extends FTNotifiableActivity {
@@ -56,6 +61,9 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
         _txtNumber = (TextView) findViewById(R.id.Phone_Label_Id);
         _txtHeader = (TextView) findViewById(R.id.Member_Activity_Header);
         _lnrlytNameInputSection = (LinearLayout) findViewById(R.id.Name_Edit_Section);
+
+        //buttons
+        btnChangeFrontActivity = (Button) findViewById(R.id.ContinueFromActivity);
         Intent intntCurrActivity = getIntent();
         m_blnIsEditMode = intntCurrActivity.getBooleanExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
         m_strMemberExtraKey = (String) getResources().getText(R.string.Extras_Key_Current_Member);
@@ -133,8 +141,31 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
 
     private void OpenMapHandler(View p_vwCurrentCallbackData) {
         //TODO send request for current location -opening of activity done from onreceive
-
+        SetActivityToWait();
+        /*create Json object for notification content with the structure:
+            * "alert":"CURRENT_LOC_REQUEST"
+            * "sender_phone":"phone number"
+         */
+        m_dsActivityDataAccess.OpenToWrite();
+        String strCurrPhone = m_dsActivityDataAccess.GetCurPhone();
+        m_dsActivityDataAccess.close();
+        JSONObject jsonObj =new JSONObject();
+        try {
+            jsonObj.put(FTNotificationParser.NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CURRENT_LOC_REQUEST);
+            jsonObj.put(FTNotificationParser.PHONE_NUMBER_TITLE,strCurrPhone);
+            ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
+            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,_currentMember.getPhoneNumber());
+            ParsePush SentParseObject = new ParsePush();
+            SentParseObject.setData(jsonObj);
+            SentParseObject.sendInBackground();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         //TODO use intent of map and coordinates from service , or from the user data loaded to activity
+    }
+
+    private void SetActivityToWait() {
+        //TODO start timer and disable all controls
     }
 
     private void ConfirmDataInputHandler(View p_vwCurrentCallbackData) {

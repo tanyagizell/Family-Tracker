@@ -446,6 +446,19 @@ public class FTDataSource {
 
     }
 
+    public String GetCurPhone()
+    {
+        ArrayList<String> arrblnRes = new ArrayList<>();
+        String[] arrstrUserPhone = {FTDBHelper.CURR_USER_COLUMN_PHONE};
+        Cursor crsrRes = _db.query(false, FTDBHelper.CURR_USER_TABLE_NAME, arrstrUserPhone, null, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrblnRes.add(crsrRes.getString(crsrRes.getColumnIndex(FTDBHelper.CURR_USER_COLUMN_PHONE)));
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrblnRes.get(0);
+    }
     public void InsertAuthorized(String p_strAuthPhone) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.AUTH_USER_COLUMN_PHONE, p_strAuthPhone);

@@ -120,7 +120,23 @@ public class FTStarter extends Application{
             //TODO -if geofence alert - if at log window or welcome window -update display , otherwise simply insert into DB
 
             //TODO if response to current location request -check which window we're in ,and use data to open necessery activity with received input
-            
+            Double dblCurrLat = (Double) arrobjParsedData.getNotificationsArgs().get(0);
+            Double dblCurrLang = (Double) arrobjParsedData.getNotificationsArgs().get(1);
+
+//            //update location before opening the map
+//            addrLatLng = getLocationFromAddress(location.getLocationAddr());
+//            String addressUpdate = addrLatLng.latitude + "," + addrLatLng.longitude;
+//            location.setLocationCoordinates(addressUpdate);
+//
+//            double latitude = addrLatLng.latitude;
+//            double longitude = addrLatLng.longitude;
+
+            String message =dblCurrLat + "," + dblCurrLang;
+            Intent intent = new Intent(m_appFamTrackerRelator.getCurrentActivity(), FTMapsActivity.class);
+            intent.putExtra(FTLocationActivity.EXTRA_MESSAGE,message);
+            startActivity(intent);
+
+
             //TODO-if request of current location - we're in passive user - should perform actions to acquire current location and generate a response push notification containing the data
             //TODO-create geofence - implemented in the parser itself .note - check if insert a validation prior to creation ,to check
         }

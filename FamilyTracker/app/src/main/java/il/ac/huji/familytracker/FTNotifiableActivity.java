@@ -27,6 +27,7 @@ public class FTNotifiableActivity extends ActionBarActivity {
 
     protected void onResume() {
         super.onResume();
+        m_dsActivityDataAccess = new FTDataSource(this);
         m_appMyApp.setCurrentActivity(this);
         m_appMyApp.NotifyReceiversAppUp(m_dsActivityDataAccess);
     }

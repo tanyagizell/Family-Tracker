@@ -82,9 +82,11 @@ public class FTInstallationActivity extends FTNotifiableActivity {
                 int selectedId = authorizationRadioGrp.getCheckedRadioButtonId();
                 if (blnCanProcede) {
                     if (selectedId == R.id.radioParent) {
-                        passiveSectionLayout.setVisibility(LinearLayout.VISIBLE);
-                    } else {
                         ExportData();
+                        setResult(Activity.RESULT_OK);
+                        finish();
+                    } else {
+                        passiveSectionLayout.setVisibility(LinearLayout.VISIBLE);
                     }
                 }
 
@@ -115,7 +117,7 @@ public class FTInstallationActivity extends FTNotifiableActivity {
                 boolean blnCanLeave = ValidateFirstPhaseInput();
                 if (blnCanLeave) {
                     int selectedId = authorizationRadioGrp.getCheckedRadioButtonId();
-                    if (selectedId == R.id.radioParent) {
+                    if (selectedId == R.id.radioChild) {
                         blnCanLeave = parentNumbers.size() > 0;
                     }
                 }

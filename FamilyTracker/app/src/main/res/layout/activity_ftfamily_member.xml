@@ -6,7 +6,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="il.ac.huji.familytracker.FTFamilyMemberActivity">
+    tools:context="il.ac.huji.familytracker.FTFamilyMemberActivity"
+   >
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -22,7 +23,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
+            android:layout_weight="9"
             android:text="@string/family_member_header"
             android:textSize="25dp" />
 
@@ -31,97 +32,104 @@
             android:id="@+id/btnConfirmMemberEdit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="@string/ok_button_text" />
+            android:layout_weight="1.5"
 
+            android:background="@drawable/ic_left_arrow"
+        />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        >
 
         <TextView
             android:id="@+id/Member_Activity_Header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
             android:text="@string/hello_world"
+            android:textSize="25dp"
     />
 
         <Button
             android:id="@+id/ContinueFromActivity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/Name_Edit_Section"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/Name_Label_Id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Name_Label_Content" />
-
-        <EditText
-        android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:text="default"
-     />
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text=""
+            android:background="@drawable/ic_map"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="8">
+        <LinearLayout
+            android:id="@+id/Name_Edit_Section"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="300dp">
 
-        <TextView
-            android:id="@+id/Phone_Label_Id"
+            <TextView
+                android:id="@+id/Name_Label_Id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Name_Label_Content"
+                android:textSize="25dp"/>
+
+            <EditText
+            android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+            android:text="default"
+         />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/Phone_Label_Id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Phone_Label_Content"
+                android:textSize="25dp"/>
+
+            <EditText
+            android:id="@+id/phone_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Phone_Label_Content" />
+                android:inputType="phone"
+            android:text="default"
+        />
+        </LinearLayout>
 
-        <EditText
-        android:id="@+id/phone_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:inputType="phone"
-        android:text="default"
-    />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            <TextView
+                android:id="@+id/Email_Label_Id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Email_Label_Content"
+                android:textSize="25dp"/>
 
-        <TextView
-            android:id="@+id/Email_Label_Id"
+            <EditText
+           android:id="@+id/email_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Email_Label_Content" />
-
-        <EditText
-       android:id="@+id/email_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="default"
-    />
+            android:text="default"
+        />
+        </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/import_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-     />
-
-
-
-
-
 
 </LinearLayout>

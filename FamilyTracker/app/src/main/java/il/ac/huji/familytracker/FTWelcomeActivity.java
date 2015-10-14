@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -45,15 +46,29 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
             Intent intntInstallation = new Intent(this, FTInstallationActivity.class);
             startActivityForResult(intntInstallation, INSTALLTION_SEQUENCE_RESPONSE);
         } else {
-            ConstructWelcomeActivityDisplay();
+            ConstructWelcomeActivityDisplay(false);
         }
     }
 
-    private void ConstructWelcomeActivityDisplay() {
+    private void ConstructWelcomeActivityDisplay(Boolean p_blnIsFirstOpen) {
         m_dsDataRetreiver.OpenToRead();
         Boolean blnIsUserParent = m_dsDataRetreiver.IsParentUser();
         m_dsDataRetreiver.close();
         SetDisplayState(blnIsUserParent);
+        if(!blnIsUserParent)
+        {
+            String strMessageToChild = null;
+            if(p_blnIsFirstOpen)
+            {
+                strMessageToChild = (String) getResources().getText(R.string.Welcome_Thanks_For_Installing);
+            }
+            else
+            {
+                strMessageToChild = (String) getResources().getText(R.string.Welcome_No_Permissions);
+            }
+            Toast.makeText(this,strMessageToChild,Toast.LENGTH_LONG).show();
+        }
+
 
     }
 
@@ -90,9 +105,16 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == INSTALLTION_SEQUENCE_RESPONSE) {
             if (resultCode == RESULT_OK) {
-                ConstructWelcomeActivityDisplay();
+                UpdateAppWasInstalled();
+                ConstructWelcomeActivityDisplay(true);
             }
         }
+    }
+
+    private void UpdateAppWasInstalled() {
+        m_dsDataRetreiver.OpenToWrite();
+        m_dsDataRetreiver.UpdateAppPassedInstallation();
+        m_dsDataRetreiver.close();
     }
 
     private void ConstructAdaptersForDisplay() {

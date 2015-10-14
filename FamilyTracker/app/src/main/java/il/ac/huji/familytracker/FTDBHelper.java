@@ -127,7 +127,7 @@ public class FTDBHelper extends SQLiteOpenHelper {
     public static final String AUTH_USER_COLUMN_ID = "ID";
     public static final String AUTH_USER_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "%s  TEXT NOT NULL);", CURR_USER_TABLE_NAME,
+                    "%s  TEXT NOT NULL);", AUTH_USER_TABLE_NAME,
             AUTH_USER_COLUMN_ID,
             AUTH_USER_COLUMN_PHONE);
     public static final String[] AUTH_USER_TABLE_DATA_COLUMNS = {AUTH_USER_COLUMN_ID, AUTH_USER_COLUMN_PHONE};

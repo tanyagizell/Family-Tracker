@@ -234,6 +234,10 @@ public class FTNotificationParser {
                 arrobjRetVal.add(dblLat);
                 arrobjRetVal.add(dblLng);
                 arrobjRetVal.add(jsonObject.getString("sender_phone"));
+
+                //open map
+
+
             }
         } catch (JSONException e) {
             e.printStackTrace();

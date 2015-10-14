@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -10,44 +11,59 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight=".5"
         android:text="@string/hello_world" />
 
     <LinearLayout
         android:id="@+id/lnrExistingFamiliesGroup"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        android:layout_height="0dp"
+        android:layout_weight="6">
 
         <TextView
+            android:text="@string/Welcome_Families_List"
             android:id="@+id/tvFamiliesViewHeader"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:layout_weight=".5"
+            android:textSize="20dp"/>
 
         <ListView
             android:id="@+id/lvFamilies"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="0dp"
+            android:layout_weight="4"></ListView>
 
         <Button
+            android:text="@string/Welcome_Add_Family"
             android:id="@+id/btnAddFamily"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/lnrShortLogViewGroup"
+        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:paddingTop="5dp">
 
         <ListView
             android:id="@+id/lvShortLogView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="0dp"
+            android:layout_weight="4"></ListView>
 
         <Button
+            android:text="@string/Welcome_Open_Log"
             android:id="@+id/btnOpenLogActivity"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
     </LinearLayout>
 </LinearLayout>
