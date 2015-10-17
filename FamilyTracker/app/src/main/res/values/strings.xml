@@ -59,6 +59,7 @@
     <string name="Welcome_Open_Log">To log</string>
     <string name="Welcome_Thanks_For_Installing">thank you for installing the application ,you may now exit the app</string>
     <string name="Welcome_No_Permissions">you have no viewing permissions,please exit the application</string>
+    <string name="Extras_Key_Family">ChosenFamilyObject</string>
 
 
 </resources>
