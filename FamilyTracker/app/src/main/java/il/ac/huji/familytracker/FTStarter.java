@@ -24,11 +24,15 @@ public class FTStarter extends Application{
 
     //TODO ADD the phone number after the installation sequence
     public static final String INSTALL_PHONE_NO_FIELD = "FTPhoneNumberField";
+    public static Context _context;
     FTInAppBroadcastReceiver m_pbrInAppReceiver;
     FTDataSource m_dsCreationTimeDataAccess;
     private Activity m_aCurrentActivity = null;
     private boolean m_blnIsInAppReceiverOn;
-    public static Context _context;
+
+    public static Context getAppContext() {
+        return FTStarter._context;
+    }
 
     public Activity getCurrentActivity() {
         return m_aCurrentActivity;
@@ -37,6 +41,7 @@ public class FTStarter extends Application{
     public void setCurrentActivity(Activity mCurrentActivity) {
         this.m_aCurrentActivity = mCurrentActivity;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -91,11 +96,6 @@ public class FTStarter extends Application{
         p_dsActivityDataAccess.close();
     }
 
-
-    public static Context getAppContext() {
-        return FTStarter._context;
-    }
-
     private class FTInAppBroadcastReceiver extends ParsePushBroadcastReceiver {
         private FTStarter m_appFamTrackerRelator;
 
@@ -116,29 +116,39 @@ public class FTStarter extends Application{
         }
 
         private void HandleNotificationAccordingly(FTParsedNotification arrobjParsedData) {
+            switch (arrobjParsedData.getNotificationType()) {
+                case CREATE_GEOFENCE:
+                    break;
+                case GEOFENCE_ALERT:
+                    break;
+                case CURRENT_LOC_REQUEST:
+                    break;
+                case CURRENT_LOC_RESPONSE:
+                    if (IsInGivenActivity(FTFamilyMemberActivity.class)) {
+                        Double dblCurrLat = (Double) arrobjParsedData.getNotificationsArgs().get(0);
+                        Double dblCurrLang = (Double) arrobjParsedData.getNotificationsArgs().get(1);
+                        String message = dblCurrLat + "," + dblCurrLang;
+                        Intent intent = new Intent(m_appFamTrackerRelator.getCurrentActivity(), FTMapsActivity.class);
+                        intent.putExtra(FTLocationActivity.EXTRA_MESSAGE, message);
+                        startActivity(intent);
+                    }
+
+                    break;
+            }
             //TODO according to the title of the notification -decide how to procede
             //TODO -if geofence alert - if at log window or welcome window -update display , otherwise simply insert into DB
 
             //TODO if response to current location request -check which window we're in ,and use data to open necessery activity with received input
-            Double dblCurrLat = (Double) arrobjParsedData.getNotificationsArgs().get(0);
-            Double dblCurrLang = (Double) arrobjParsedData.getNotificationsArgs().get(1);
 
-//            //update location before opening the map
-//            addrLatLng = getLocationFromAddress(location.getLocationAddr());
-//            String addressUpdate = addrLatLng.latitude + "," + addrLatLng.longitude;
-//            location.setLocationCoordinates(addressUpdate);
-//
-//            double latitude = addrLatLng.latitude;
-//            double longitude = addrLatLng.longitude;
 
-            String message =dblCurrLat + "," + dblCurrLang;
-            Intent intent = new Intent(m_appFamTrackerRelator.getCurrentActivity(), FTMapsActivity.class);
-            intent.putExtra(FTLocationActivity.EXTRA_MESSAGE,message);
-            startActivity(intent);
 
 
             //TODO-if request of current location - we're in passive user - should perform actions to acquire current location and generate a response push notification containing the data
             //TODO-create geofence - implemented in the parser itself .note - check if insert a validation prior to creation ,to check
+        }
+
+        private boolean IsInGivenActivity(Class p_clsToCompareTo) {
+            return m_appFamTrackerRelator != null && m_appFamTrackerRelator.getCurrentActivity() != null && m_appFamTrackerRelator.getCurrentActivity().getClass() == p_clsToCompareTo;
         }
     }
 }
