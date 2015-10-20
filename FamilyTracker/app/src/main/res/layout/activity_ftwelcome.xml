@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:orientation="vertical"
         android:layout_height="0dp"
-        android:layout_weight="6">
+        android:layout_weight="5">
 
         <TextView
             android:text="@string/Welcome_Families_List"
@@ -36,8 +36,10 @@
             android:layout_height="0dp"
             android:layout_weight="4"></ListView>
 
-        <Button
+        <ImageButton
             android:text="@string/Welcome_Add_Family"
+            android:src="@drawable/ic_add_family"
+            android:background="#FFFFCC"
             android:id="@+id/btnAddFamily"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
@@ -59,11 +61,32 @@
             android:layout_height="0dp"
             android:layout_weight="4"></ListView>
 
-        <Button
-            android:text="@string/Welcome_Open_Log"
-            android:id="@+id/btnOpenLogActivity"
-            android:layout_width="wrap_content"
+        <FrameLayout
+
+            android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="2.5">
+
+            <ImageButton
+                android:text="@string/Welcome_Open_Log"
+                android:id="@+id/btnOpenLogActivity"
+                android:src="@drawable/ic_log"
+                android:background="#FFFFCC"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+
+                />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|left"
+                    android:clickable="false"
+                    android:paddingLeft="25dp"
+                    android:textStyle="bold"
+                    android:textSize="25dp"
+                    android:text="View Log" >
+                </TextView>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

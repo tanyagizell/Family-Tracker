@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,8 +27,8 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     FTDataSource m_dsDataRetreiver;
     ListView m_lvLogPeek;
     ListView m_lvFamilies;
-    Button m_btnAddFamily;
-    Button m_btnOpenLogActivity;
+    ImageButton m_btnAddFamily;
+    ImageButton m_btnOpenLogActivity;
     private LinearLayout m_lnrlytFamilies;
     private LinearLayout m_lnrlytShortLog;
 
@@ -75,8 +76,8 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     private void SetDisplayState(Boolean blnIsUserParent) {
         m_lvFamilies = (ListView) findViewById(R.id.lvFamilies);
         m_lvLogPeek = (ListView) findViewById(R.id.lvShortLogView);
-        m_btnAddFamily = (Button) findViewById(R.id.btnAddFamily);
-        m_btnOpenLogActivity = (Button) findViewById(R.id.btnOpenLogActivity);
+        m_btnAddFamily = (ImageButton) findViewById(R.id.btnAddFamily);
+        m_btnOpenLogActivity = (ImageButton) findViewById(R.id.btnOpenLogActivity);
         m_lnrlytFamilies = (LinearLayout) findViewById(R.id.lnrExistingFamiliesGroup);
         m_lnrlytShortLog = (LinearLayout) findViewById(R.id.lnrShortLogViewGroup);
         if (blnIsUserParent) {

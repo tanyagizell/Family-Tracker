@@ -28,7 +28,7 @@
     <string name="location_name_text">Name:</string>
     <string name="location_addr_text">Addr:</string>
     <string name="ok_button_text">OK</string>
-    <string name="location_header">Add Location</string>
+    <string name="location_header">Location</string>
 
     <!-- Family member activity -->
     <string name="Activity_Header_Content_Create_Member">Input Member Data</string>

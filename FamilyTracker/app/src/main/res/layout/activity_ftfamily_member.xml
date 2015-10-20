@@ -6,6 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+
     tools:context="il.ac.huji.familytracker.FTFamilyMemberActivity"
    >
 
@@ -16,14 +17,22 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_weight="1"
-        android:background="@color/wallet_holo_blue_light"
+        android:background="#FFFFCC"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:src="@drawable/ic_family_member_header" />
 
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="8"
+            android:paddingLeft="5dp"
             android:text="@string/family_member_header"
             android:textSize="25dp" />
 
@@ -32,9 +41,9 @@
             android:id="@+id/btnConfirmMemberEdit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
+            android:layout_weight="1.7"
 
-            android:background="@drawable/ic_left_arrow"
+            android:background="@drawable/ic_arrow_forwrd"
         />
     </LinearLayout>
 
@@ -73,7 +82,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="300dp">
+            android:paddingTop="100dp">
 
             <TextView
                 android:id="@+id/Name_Label_Id"
