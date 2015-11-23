@@ -60,6 +60,15 @@
     <string name="Welcome_Thanks_For_Installing">thank you for installing the application ,you may now exit the app</string>
     <string name="Welcome_No_Permissions">you have no viewing permissions,please exit the application</string>
     <string name="Extras_Key_Family">ChosenFamilyObject</string>
+    <string name="leaving_page_saving_action_alert">leaving the page  saves all changes to current page</string>
+    <string name="confirm_editable_activity_exit_title">Leaving editable activity</string>
+    <string name="confirm_editable_activity_exit_message">leaving this activity will confirm all changes made in current window</string>
+    <string name="save_confirmation_ok_text">ok</string>
+    <string name="save_confirmation_cancel_text">cancel</string>
+    <string name="family_activity_error_name_not_provided">you must input the family name to exit</string>
+    <string name="confirm_editable_activity_exit_without_change_title">rollback edit dialog</string>
+    <string name="confirm_editable_activity_exit_without_change_message">an important input field is empty ,revert changes  and exit?</string>
+    <string name="family_activity_must_provide_family_name">no family created yet,input family name to continue</string>
 
 
 </resources>

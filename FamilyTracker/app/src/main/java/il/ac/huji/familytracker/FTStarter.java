@@ -120,6 +120,7 @@ public class FTStarter extends Application{
                 case CREATE_GEOFENCE:
                     break;
                 case GEOFENCE_ALERT:
+
                     break;
                 case CURRENT_LOC_REQUEST:
                     break;

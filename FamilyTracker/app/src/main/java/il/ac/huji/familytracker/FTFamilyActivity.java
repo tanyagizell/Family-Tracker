@@ -1,16 +1,18 @@
 package il.ac.huji.familytracker;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Layout;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,10 +34,19 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     private Button m_btnConfirmChanges;
     private Family m_fmlCurrentFamily;
 
+    private boolean m_blnIsFamilyCreation;
+    private boolean m_blnIsFirstSaveCommited;
+
+    //variable for closing sequence
+    private boolean m_blnShouldContinueClosing;
+
+    //variable to track opening of editing activities
+    private boolean m_blnIsOpeningEditActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        m_blnIsOpeningEditActivity = false;
         m_btnAddMember = (Button) findViewById(R.id.addMemberBtn);
         m_btnAddLocation = (Button) findViewById(R.id.btnAddFamilyLoc);
         m_lvLocations = (ListView) findViewById(R.id.lvFamilyLocations);
@@ -44,20 +55,162 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         m_btnConfirmChanges = (Button) findViewById(R.id.okFamilyButton);
         setContentView(R.layout.activity_ftfamily);
         Intent intntCurrActivityIntent = getIntent();
-        boolean blnIsFamilyCreation = false;
+        m_blnIsFamilyCreation = false;
         m_fmlCurrentFamily = null;
-        if (intntCurrActivityIntent.hasExtra(String.valueOf(R.string.Extras_Key_Family))) {
+        if (intntCurrActivityIntent.hasExtra(getResources().getString(R.string.Extras_Key_Family))) {
             m_fmlCurrentFamily = intntCurrActivityIntent.getParcelableExtra(String.valueOf(R.string.Extras_Key_Family));
-            blnIsFamilyCreation = true;
+            m_blnIsFamilyCreation = true;
+            m_blnIsFirstSaveCommited = false;
             LoadDataFromDB();
         }
-        m_edtFamilyName.setEnabled(blnIsFamilyCreation);
+        m_edtFamilyName.setEnabled(m_blnIsFamilyCreation);
         m_btnConfirmChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-          
+                OnUserRequestToLeave();
+
             }
         });
+        m_btnAddMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpenEditableActivityOnCondition(true);
+            }
+        });
+        m_btnAddLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OpenEditableActivityOnCondition(false);
+            }
+        });
+        m_lvMembers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                FamilyMember fmSelectedMember = (FamilyMember) adapterView.getSelectedItem();
+                OpenFTFamilyMemberActivity(fmSelectedMember);
+            }
+        });
+
+        m_lvLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            }
+        });
+
+    }
+
+    private void OpenEditableActivityOnCondition(boolean p_blnIsAddLocation) {
+        if (m_fmlCurrentFamily == null && !IsFamilyNameFieldFilled()) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.family_activity_must_provide_family_name), Toast.LENGTH_LONG).show();
+        } else {
+            m_blnIsOpeningEditActivity = true;
+            if (m_fmlCurrentFamily == null) {
+                String strInputFamilyName = m_edtFamilyName.getText().toString();
+                int nFamilyId = m_dsActivityDataAccess.InsertFamilyToDB(strInputFamilyName);
+                m_fmlCurrentFamily = new Family(strInputFamilyName, nFamilyId);
+            }
+            if (p_blnIsAddLocation) {
+                OpenFTLocationActivity();
+            } else {
+                OpenFTFamilyMemberActivity(null);
+            }
+        }
+
+    }
+
+    private void OpenFTFamilyMemberActivity(FamilyMember fmSelectedMember) {
+        Intent intntCreateMember = new Intent(getApplicationContext(), FTFamilyMemberActivity.class);
+        if (fmSelectedMember == null) {
+            intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
+            intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Is_First_Edit_Mode), true);
+            intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Family_Id), m_fmlCurrentFamily.getFamilyID());
+        } else {
+            intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), false);
+            intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Current_Member), fmSelectedMember);
+
+        }
+        //TODO when i will work on opening elements from the list ,should provide ability to set other extras
+        getApplicationContext().startActivity(intntCreateMember);
+    }
+
+    private void OpenFTLocationActivity() {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        OnUserRequestToLeave();
+        super.onBackPressed();
+    }
+
+    private void OnUserRequestToLeave() {
+        CheckIfUserWantsToLeave();
+        if (m_blnShouldContinueClosing) {
+            CheckIfAllDataInserted();
+        }
+        m_dsActivityDataAccess.OpenToWrite();
+        if (m_blnIsFamilyCreation && !m_blnIsFirstSaveCommited) {
+            m_dsActivityDataAccess.InsertFamilyToDB(m_edtFamilyName.getText().toString());
+        } else {
+            if (!IsFamilyNameFieldFilled()) {
+                m_fmlCurrentFamily.setFamilyName(m_edtFamilyName.getText().toString());
+                m_dsActivityDataAccess.UpdateFamily(m_fmlCurrentFamily);
+            }
+        }
+        m_dsActivityDataAccess.close();
+        finish();
+    }
+
+    private boolean IsFamilyNameFieldFilled() {
+        return m_edtFamilyName.getText().toString().equals("");
+    }
+
+    private void CheckIfAllDataInserted() {
+        if (IsFamilyNameFieldFilled()) {
+            if (m_blnIsFamilyCreation) {
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.family_activity_error_name_not_provided), Toast.LENGTH_LONG).show();
+                m_blnShouldContinueClosing = false;
+            } else {
+                AlertDialog.Builder alrtbldShouldExitWithoutEdit = new AlertDialog.Builder(getApplicationContext()).setIcon(android.R.drawable.ic_dialog_alert);
+                alrtbldShouldExitWithoutEdit.setTitle(R.string.confirm_editable_activity_exit_without_change_title);
+                alrtbldShouldExitWithoutEdit.setMessage(R.string.confirm_editable_activity_exit_without_change_message);
+                alrtbldShouldExitWithoutEdit.setPositiveButton(R.string.save_confirmation_ok_text, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //Stop the activity
+                        m_blnShouldContinueClosing = true;
+                    }
+
+                });
+                alrtbldShouldExitWithoutEdit.setNegativeButton(R.string.save_confirmation_cancel_text, null);
+                alrtbldShouldExitWithoutEdit.show();
+            }
+        }
+    }
+
+    private void CheckIfUserWantsToLeave() {
+        m_blnShouldContinueClosing = false;
+        AlertDialog.Builder alrtbldConfirm = new AlertDialog.Builder(getApplicationContext()).setIcon(android.R.drawable.ic_dialog_alert);
+        alrtbldConfirm.setTitle(R.string.confirm_editable_activity_exit_title);
+        alrtbldConfirm.setMessage(R.string.confirm_editable_activity_exit_message);
+        alrtbldConfirm.setPositiveButton(R.string.save_confirmation_ok_text, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                //Stop the activity
+                m_blnShouldContinueClosing = true;
+            }
+
+        });
+        alrtbldConfirm.setNegativeButton(R.string.save_confirmation_cancel_text, null);
+        alrtbldConfirm.show();
+    }
+
+    private void setShouldContinue(boolean p_blnValToSet) {
 
     }
 
@@ -74,7 +227,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         } else {
             p_arrToLoadDataTo = m_dsActivityDataAccess.GetLocationsByFamily(m_fmlCurrentFamily.getFamilyID());
         }
-        p_adptToUpdateDisplay = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, p_arrToLoadDataTo);
+        p_adptToUpdateDisplay = new ArrayAdapter<String>(getApplicationContext(), R.layout.ft_simple_list_item_typed_array, R.id.tvListItemControl, p_arrToLoadDataTo);
         p_lvUiCompToUpdate.setAdapter(p_adptToUpdateDisplay);
 
     }
@@ -100,5 +253,20 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (m_blnIsOpeningEditActivity) {
+            m_blnIsOpeningEditActivity = false;
+            m_dsActivityDataAccess.OpenToRead();
+            m_arrmbrFamilyMembers = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
+            m_arrlcFamilyLocs = m_dsActivityDataAccess.GetLocationsByFamily(m_fmlCurrentFamily.getFamilyID());
+            m_dsActivityDataAccess.close();
+            m_adptFamilyMembersListAdapter.notifyDataSetChanged();
+            m_adptLocationsListAdapter.notifyDataSetChanged();
+        }
+
     }
 }

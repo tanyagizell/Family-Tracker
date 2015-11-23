@@ -13,7 +13,7 @@ import java.util.Locale;
 
 /**
  * Created by Tanyagizell on 25/08/2015.
- *
+ * <p/>
  * Class for managing data access
  */
 public class FTDataSource {
@@ -123,11 +123,19 @@ public class FTDataSource {
         return new Family(strName, nDBId);
     }
 
-    public void InsertFamilyToDB(String familyName) {
+    public int InsertFamilyToDB(String familyName) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.FAMILIES_COLUMN_NAME, familyName);
 // insert the row
         long id = _db.insert(FTDBHelper.FAMILIES_TABLE_NAME, null, values);
+        return (int) id;
+    }
+
+    public void UpdateFamily(Family p_fmToUpdate) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.FAMILIES_COLUMN_NAME, p_fmToUpdate.getfamilyName());
+        String[] arrstrUpdateArgs = {Integer.toString(p_fmToUpdate.getFamilyID())};
+        _db.update(FTDBHelper.FAMILIES_TABLE_NAME, values, String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.FAMILIES_COLUMN_ID), arrstrUpdateArgs);
     }
 
     // Family members table Methods
@@ -212,20 +220,7 @@ public class FTDataSource {
         values.put(FTDBHelper.PLACES_COLUMN_PLACE_ADDRESS, p_strAddress);
 // insert the row
         long id = _db.insert(FTDBHelper.PLACES_TABLE_NAME, null, values);
-
-        String[] arrstrPlaceIdColumn = {FTDBHelper.PLACES_COLUMN_PLACE_ID};
-        String strSpecificPlaceSelection = String.format("%s AND %s",
-                String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_COORD),
-                String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY));
-        String[] arrStrSelectionArgs = {p_strCoords, Integer.toString(p_nFamily)};
-        Cursor crsrCurrentRecordGetter = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, arrstrPlaceIdColumn, strSpecificPlaceSelection, arrStrSelectionArgs, null, null, null, null);
-        crsrCurrentRecordGetter.moveToFirst();
-        ArrayList<Integer> arrnRetVal = new ArrayList<>();
-        while (!crsrCurrentRecordGetter.isAfterLast()) {
-            arrnRetVal.add(crsrCurrentRecordGetter.getInt(crsrCurrentRecordGetter.getColumnIndex(FTDBHelper.PLACES_COLUMN_PLACE_ID)));
-            crsrCurrentRecordGetter.moveToNext();
-        }
-        return arrnRetVal.get(0);
+        return (int) id;
     }
 
     public ArrayList<FamilyMember> removeLocation(int p_nLocId) {
@@ -268,15 +263,13 @@ public class FTDataSource {
         long id = _db.insert(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, null, values);
     }
 
-    public void DeleteMemberRegistrationToLocation(int p_nLocId, int p_nMemberId)
-    {
+    public void DeleteMemberRegistrationToLocation(int p_nLocId, int p_nMemberId) {
         String[] arrstrDeleteArgs = {Integer.toString(p_nMemberId), Integer.toString(p_nLocId)};
         String strQuery = String.format("%s AND %s", String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_MEMBER_ID), String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.MEMBER_TO_PLACE_COLUMN_PLACE_ID));
         _db.delete(FTDBHelper.MEMBER_TO_PLACE_TABLE_NAME, strQuery, arrstrDeleteArgs);
     }
 
-    private void deleteRegistrationFromLocOfMembers(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId)
-    {
+    private void deleteRegistrationFromLocOfMembers(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId) {
         ArrayList<String> arrstrComponentsOfQuery = ProvideWithDeleteComponents(arrnMemberIdsToNotify, p_nLocId);
         String strQuery = arrstrComponentsOfQuery.get(0);
         ArrayList<String> arrstrArgs = new ArrayList<>(arrstrComponentsOfQuery.subList(1, arrstrComponentsOfQuery.size() - 1));
@@ -446,8 +439,7 @@ public class FTDataSource {
 
     }
 
-    public String GetCurPhone()
-    {
+    public String GetCurPhone() {
         ArrayList<String> arrblnRes = new ArrayList<>();
         String[] arrstrUserPhone = {FTDBHelper.CURR_USER_COLUMN_PHONE};
         Cursor crsrRes = _db.query(false, FTDBHelper.CURR_USER_TABLE_NAME, arrstrUserPhone, null, null, null, null, null, null);
@@ -459,6 +451,7 @@ public class FTDataSource {
         crsrRes.close();
         return arrblnRes.get(0);
     }
+
     public void InsertAuthorized(String p_strAuthPhone) {
         ContentValues values = new ContentValues();
         values.put(FTDBHelper.AUTH_USER_COLUMN_PHONE, p_strAuthPhone);

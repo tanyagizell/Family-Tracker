@@ -68,6 +68,10 @@ public class Family implements Parcelable {
         return _familyName;
     }
 
+    public void setFamilyName(String p_strFamilyName) {
+        _familyName = p_strFamilyName;
+    }
+
     public int getFamilyID() {
         return _DBFamilyID;
     }

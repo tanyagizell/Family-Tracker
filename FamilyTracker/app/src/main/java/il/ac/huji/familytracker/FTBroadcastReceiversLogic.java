@@ -12,11 +12,5 @@ public class FTBroadcastReceiversLogic {
 
     }
 
-    public static void HandleLocationResponseInApp() {
 
-    }
-
-    public static void HandleLocationRequest() {
-        //check if request comes from authorized number- if so retrieve and return
-    }
 }
