@@ -136,15 +136,18 @@ public class FTDBHelper extends SQLiteOpenHelper {
     public static final String APP_REQ_COLUMN_IS_FIRST_TIME = "IS_FIRST_TIME";
     public static final String APP_REQ_COLUMN_IS_APP_ON = "IS_APP_ON";
     public static final String APP_REQ_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", APP_REQ_TABLE_NAME, APP_REQ_COLUMN_IS_FIRST_TIME, APP_REQ_COLUMN_IS_APP_ON);
+    public static final String APP_REQ_COLUMN_NOTIFICATION_LAST_ID = "LAST_NOTIFICATION_ID";
     public static final String APP_REQ_COLUMN_ID = "ID";
     private final String APP_REQ_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s  BOOLEAN NOT NULL," +
-                    "%s  BOOLEAN NOT NULL);", APP_REQ_TABLE_NAME,
+                    "%s  BOOLEAN NOT NULL," +
+                    "%s INTEGER NOT NULL);", APP_REQ_TABLE_NAME,
             APP_REQ_COLUMN_ID,
             APP_REQ_COLUMN_IS_FIRST_TIME,
-            APP_REQ_COLUMN_IS_APP_ON);
-    public static final String[] APP_REQ_TABLE_DATA_COLUMNS = {APP_REQ_COLUMN_ID, APP_REQ_COLUMN_IS_FIRST_TIME, APP_REQ_COLUMN_IS_APP_ON};
+            APP_REQ_COLUMN_IS_APP_ON,
+            APP_REQ_COLUMN_NOTIFICATION_LAST_ID);
+    public static final String[] APP_REQ_TABLE_DATA_COLUMNS = {APP_REQ_COLUMN_ID, APP_REQ_COLUMN_IS_FIRST_TIME, APP_REQ_COLUMN_IS_APP_ON, APP_REQ_COLUMN_NOTIFICATION_LAST_ID};
     private static final String MEMBER_TO_PLACE_COLUMN_REGISTRATION_ID = "ID";
     private final String MEMBER_TO_PLACE_TABLE_CREATION = String.format("CREATE TABLE %s (" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -183,6 +186,7 @@ public class FTDBHelper extends SQLiteOpenHelper {
         ContentValues Values = new ContentValues();
         Values.put(APP_REQ_COLUMN_IS_FIRST_TIME, true);
         Values.put(APP_REQ_COLUMN_IS_APP_ON, true);
+        Values.put(APP_REQ_COLUMN_NOTIFICATION_LAST_ID, 0);
         sqLiteDatabase.insert(APP_REQ_TABLE_NAME, null, Values);
     }
 

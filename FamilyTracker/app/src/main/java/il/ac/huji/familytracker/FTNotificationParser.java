@@ -139,7 +139,7 @@ public class FTNotificationParser {
     * "sender_phone":"phone number"
     * "timestamp":"date and time"
     * */
-    private static ArrayList<Object> parseGeofenceAlert(JSONObject jsonObject, FTDataSource p_dsDataRetriever) {
+    public static ArrayList<Object> parseGeofenceAlert(JSONObject jsonObject, FTDataSource p_dsDataRetriever) {
         ArrayList<Object> arrobjRetVal = null;
         try {
             if (p_dsDataRetriever != null) {
@@ -168,7 +168,7 @@ public class FTNotificationParser {
     * "alert":"CURRENT_LOC_REQUEST"
     * "sender_phone":"phone number"
     * */
-    private static void parseCurrentLocRequest(JSONObject jsonObject) {
+    public static void parseCurrentLocRequest(JSONObject jsonObject) {
         //TODO handle custom events
 
         String requestingNumber = "";

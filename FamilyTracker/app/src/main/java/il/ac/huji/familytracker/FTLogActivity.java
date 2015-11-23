@@ -11,20 +11,19 @@ import java.util.ArrayList;
 
 public class FTLogActivity extends FTNotifiableActivity {
 
+    public ArrayList<FTNotification> m_arrNotifications;
     FTLogAdapter _logEntriesAdapter;
-    FTDataSource _dsNotificationsRetriever;
     ListView lvNotificationsDisplay;
-    private ArrayList<FTNotification> m_arrNotifications;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftlog);
         lvNotificationsDisplay = (ListView) findViewById(R.id.NotificationsListView);
-        _dsNotificationsRetriever = new FTDataSource(this);
-        _dsNotificationsRetriever.OpenToRead();
-        m_arrNotifications = _dsNotificationsRetriever.GeteNotificationsItemsFromDB();
-        _dsNotificationsRetriever.close();
+        m_dsActivityDataAccess = new FTDataSource(this);
+        m_dsActivityDataAccess.OpenToRead();
+        m_arrNotifications = m_dsActivityDataAccess.GeteNotificationsItemsFromDB();
+        m_dsActivityDataAccess.close();
         _logEntriesAdapter = new FTLogAdapter(this, m_arrNotifications);
         lvNotificationsDisplay.setAdapter(_logEntriesAdapter);
     }

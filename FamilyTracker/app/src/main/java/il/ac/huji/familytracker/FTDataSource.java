@@ -439,6 +439,24 @@ public class FTDataSource {
 
     }
 
+    public int GetLastUsedNotifId() {
+        ArrayList<Integer> arrnRes = new ArrayList<>();
+        String[] arrstrStaticReceiverStatusCol = {FTDBHelper.APP_REQ_COLUMN_NOTIFICATION_LAST_ID};
+        Cursor crsrRes = _db.query(false, FTDBHelper.APP_REQ_TABLE_NAME, arrstrStaticReceiverStatusCol, null, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrnRes.add(crsrRes.getInt(crsrRes.getColumnIndex(FTDBHelper.APP_REQ_COLUMN_NOTIFICATION_LAST_ID)));
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrnRes.get(0);
+    }
+
+    public void UpdateLastUsedNotifId(int p_nLastNotifId) {
+        ContentValues Values = new ContentValues();
+        Values.put(FTDBHelper.APP_REQ_COLUMN_NOTIFICATION_LAST_ID, p_nLastNotifId);
+        _db.update(FTDBHelper.APP_REQ_TABLE_NAME, Values, null, null);
+    }
     public String GetCurPhone() {
         ArrayList<String> arrblnRes = new ArrayList<>();
         String[] arrstrUserPhone = {FTDBHelper.CURR_USER_COLUMN_PHONE};

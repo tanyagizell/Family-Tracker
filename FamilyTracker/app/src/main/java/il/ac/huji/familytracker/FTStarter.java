@@ -120,7 +120,29 @@ public class FTStarter extends Application{
                 case CREATE_GEOFENCE:
                     break;
                 case GEOFENCE_ALERT:
-
+                    FTNotification ntfCurrNotification = (FTNotification) (arrobjParsedData.getNotificationsArgs().get(0));
+                    FTBroadcastReceiversLogic.InsertGeofenceNotifToDB(ntfCurrNotification, m_dsCreationTimeDataAccess);
+                    if (IsInGivenActivity(FTLogActivity.class)) {
+                        FTLogActivity acLogWindowAccess = ((FTLogActivity) m_appFamTrackerRelator.getCurrentActivity());
+                        if (acLogWindowAccess.m_dsActivityDataAccess == null) ;
+                        {
+                            acLogWindowAccess.m_dsActivityDataAccess = new FTDataSource(getApplicationContext());
+                        }
+                        acLogWindowAccess.m_dsActivityDataAccess.OpenToRead();
+                        acLogWindowAccess.m_arrNotifications = acLogWindowAccess.m_dsActivityDataAccess.GeteNotificationsItemsFromDB();
+                        acLogWindowAccess.m_dsActivityDataAccess.close();
+                        acLogWindowAccess._logEntriesAdapter.notifyDataSetChanged();
+                    } else if (IsInGivenActivity(FTWelcomeActivity.class)) {
+                        FTWelcomeActivity acWelcomeWindowAccess = ((FTWelcomeActivity) m_appFamTrackerRelator.getCurrentActivity());
+                        if (acWelcomeWindowAccess.m_dsActivityDataAccess == null) ;
+                        {
+                            acWelcomeWindowAccess.m_dsActivityDataAccess = new FTDataSource(getApplicationContext());
+                        }
+                        acWelcomeWindowAccess.m_dsActivityDataAccess.OpenToRead();
+                        acWelcomeWindowAccess.m_arrntfMostRecentNotifications = acWelcomeWindowAccess.m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(acWelcomeWindowAccess.MAX_NOTIF_IN_WELCOME);
+                        acWelcomeWindowAccess.m_dsActivityDataAccess.close();
+                        acWelcomeWindowAccess.m_lgadptLogPeekAdapter.notifyDataSetChanged();
+                    }
                     break;
                 case CURRENT_LOC_REQUEST:
                     break;

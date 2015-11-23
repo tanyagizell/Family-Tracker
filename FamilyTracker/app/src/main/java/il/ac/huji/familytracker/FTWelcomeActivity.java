@@ -18,13 +18,12 @@ import java.util.ArrayList;
 //TODO handle receiving log notification while welcome menu is open
 //TODO define logic for adding a family
 public class FTWelcomeActivity extends FTNotifiableActivity {
-    private static final int MAX_NOTIF_IN_WELCOME = 3;
+    public static final int MAX_NOTIF_IN_WELCOME = 3;
     private static final int INSTALLTION_SEQUENCE_RESPONSE = 1;
+    public FTLogAdapter m_lgadptLogPeekAdapter;
+    public ArrayList<FTNotification> m_arrntfMostRecentNotifications;
     ArrayAdapter<Family> m_adptFamiliesAdapter;
     ArrayList<Family> m_arrfmlFamilies;
-    FTLogAdapter m_lgadptLogPeekAdapter;
-    ArrayList<FTNotification> m_arrntfMostRecentNotifications;
-    FTDataSource m_dsDataRetreiver;
     ListView m_lvLogPeek;
     ListView m_lvFamilies;
     ImageButton m_btnAddFamily;
@@ -38,10 +37,10 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_ftwelcome);
-        m_dsDataRetreiver = new FTDataSource(this);
-        m_dsDataRetreiver.OpenToRead();
-        Boolean blnIsInstalltionActivation = m_dsDataRetreiver.IsAppFirstActivation();
-        m_dsDataRetreiver.close();
+        m_dsActivityDataAccess = new FTDataSource(this);
+        m_dsActivityDataAccess.OpenToRead();
+        Boolean blnIsInstalltionActivation = m_dsActivityDataAccess.IsAppFirstActivation();
+        m_dsActivityDataAccess.close();
 
         if (blnIsInstalltionActivation) {
             Intent intntInstallation = new Intent(this, FTInstallationActivity.class);
@@ -52,9 +51,9 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     }
 
     private void ConstructWelcomeActivityDisplay(Boolean p_blnIsFirstOpen) {
-        m_dsDataRetreiver.OpenToRead();
-        Boolean blnIsUserParent = m_dsDataRetreiver.IsParentUser();
-        m_dsDataRetreiver.close();
+        m_dsActivityDataAccess.OpenToRead();
+        Boolean blnIsUserParent = m_dsActivityDataAccess.IsParentUser();
+        m_dsActivityDataAccess.close();
         SetDisplayState(blnIsUserParent);
         if(!blnIsUserParent)
         {
@@ -113,16 +112,16 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     }
 
     private void UpdateAppWasInstalled() {
-        m_dsDataRetreiver.OpenToWrite();
-        m_dsDataRetreiver.UpdateAppPassedInstallation();
-        m_dsDataRetreiver.close();
+        m_dsActivityDataAccess.OpenToWrite();
+        m_dsActivityDataAccess.UpdateAppPassedInstallation();
+        m_dsActivityDataAccess.close();
     }
 
     private void ConstructAdaptersForDisplay() {
-        m_dsDataRetreiver.OpenToRead();
-        m_arrfmlFamilies = m_dsDataRetreiver.GetFamiliesFromDB();
-        m_arrntfMostRecentNotifications = m_dsDataRetreiver.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME);
-        m_dsDataRetreiver.close();
+        m_dsActivityDataAccess.OpenToRead();
+        m_arrfmlFamilies = m_dsActivityDataAccess.GetFamiliesFromDB();
+        m_arrntfMostRecentNotifications = m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME);
+        m_dsActivityDataAccess.close();
         m_adptFamiliesAdapter = new ArrayAdapter<Family>(this, android.R.layout.simple_list_item_1, m_arrfmlFamilies);
         m_lvFamilies.setAdapter(m_adptFamiliesAdapter);
         m_lgadptLogPeekAdapter = new FTLogAdapter(this, m_arrntfMostRecentNotifications);

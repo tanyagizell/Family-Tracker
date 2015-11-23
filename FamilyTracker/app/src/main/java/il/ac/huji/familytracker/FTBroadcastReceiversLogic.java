@@ -8,7 +8,7 @@ public class FTBroadcastReceiversLogic {
 
     }
 
-    public static void InsertGeofenceNotifToDB() {
+    public static void InsertGeofenceNotifToDB(FTNotification ntfCurrNotification, FTDataSource m_dsLocalDataAccessor) {
 
     }
 
