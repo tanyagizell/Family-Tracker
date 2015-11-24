@@ -123,4 +123,9 @@ public class FamilyMember implements Parcelable {
     public int getMemberId() {
         return m_nMemberDBId;
     }
+
+    @Override
+    public String toString() {
+        return m_strName;
+    }
 }

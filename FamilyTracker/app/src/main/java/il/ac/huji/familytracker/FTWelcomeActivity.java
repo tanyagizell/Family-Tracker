@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -88,6 +89,14 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
                     startActivity(intntLog);
                 }
             });
+
+            m_btnAddFamily.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intntFamily = new Intent(getApplicationContext(), FTFamilyActivity.class);
+                    startActivity(intntFamily);
+                }
+            });
         }
         SetControlsVisibility(blnIsUserParent);
 
@@ -126,6 +135,16 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
         m_lvFamilies.setAdapter(m_adptFamiliesAdapter);
         m_lgadptLogPeekAdapter = new FTLogAdapter(this, m_arrntfMostRecentNotifications);
         m_lvLogPeek.setAdapter(m_lgadptLogPeekAdapter);
+        m_lvFamilies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Family fmChosen = m_arrfmlFamilies.get(i);
+
+                Intent intntFamily = new Intent(FTWelcomeActivity.this, FTFamilyActivity.class);
+                intntFamily.putExtra(getResources().getString(R.string.Extras_Key_Family), fmChosen);
+                startActivity(intntFamily);
+            }
+        });
 
     }
 
@@ -150,5 +169,18 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        m_dsActivityDataAccess.OpenToRead();
+        m_arrfmlFamilies.clear();
+        m_arrfmlFamilies.addAll(m_dsActivityDataAccess.GetFamiliesFromDB());
+        m_arrntfMostRecentNotifications.clear();
+        m_arrntfMostRecentNotifications.addAll(m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME));
+        m_dsActivityDataAccess.close();
+        m_adptFamiliesAdapter.notifyDataSetChanged();
+        m_lgadptLogPeekAdapter.notifyDataSetChanged();
     }
 }

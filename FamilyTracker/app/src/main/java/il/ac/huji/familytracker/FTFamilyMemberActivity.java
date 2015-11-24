@@ -50,6 +50,8 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftfamily_member);
         m_dsActivityDataAccess = new FTDataSource(this);
+        btnConfirmChanges = (Button)findViewById(R.id.btnConfirmMemberEdit);
+        btnChangeFrontActivity = (Button)findViewById(R.id.ContinueFromActivity);
         //saving references to visual elements necessery for the setting of the activity's mode
         //edit boxes
         _edtEMail = (EditText) findViewById(R.id.email_address);
@@ -65,7 +67,7 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
         //buttons
         btnChangeFrontActivity = (Button) findViewById(R.id.ContinueFromActivity);
         Intent intntCurrActivity = getIntent();
-        m_blnIsEditMode = intntCurrActivity.getBooleanExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
+        m_blnIsEditMode = true;//intntCurrActivity.getBooleanExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
         m_strMemberExtraKey = (String) getResources().getText(R.string.Extras_Key_Current_Member);
         m_blnIsFirstEdit = m_blnIsEditMode ? intntCurrActivity.getBooleanExtra((String) getResources().getText(R.string.Extras_Key_Is_First_Edit_Mode), true) : false;
 
@@ -104,22 +106,37 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
     private void setButtonsPerActivityState() {
         SetImageToButton();
         if (m_blnIsEditMode) {
-            btnExtendedEditingOpts.setVisibility(Button.INVISIBLE);
+            //btnExtendedEditingOpts.setVisibility(Button.INVISIBLE);
             btnChangeFrontActivity.setVisibility(Button.INVISIBLE);
             btnConfirmChanges.setVisibility(Button.VISIBLE);
-        } else {
-            btnExtendedEditingOpts.setOnClickListener(new View.OnClickListener() {
+            btnChangeFrontActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                  OpenMapHandler(v);
+            }
+            }
+            );
+            btnConfirmChanges.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    OpenMemberEditWindow(v);
+                public void onClick(View view) {
+                    ConfirmDataInputHandler(view);
+                    //leave the activity after adding editing is done
+                    finish();
                 }
             });
+        } else {
+//            btnExtendedEditingOpts.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    OpenMemberEditWindow(v);
+//                }
+//            });
             btnChangeFrontActivity.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     OpenMapHandler(v);
                 }
-                                                      }
+            }
             );
             btnConfirmChanges.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -193,7 +210,7 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
 
     void OpenMemberEditWindow(View p_vwCurrentCallbackData) {
         //TODO finish-started before uploading to work on this
-        Intent intntOnEdit = new Intent(getBaseContext(), FTFamilyMemberActivity.class);
+        Intent intntOnEdit = new Intent(this, FTFamilyMemberActivity.class);
         intntOnEdit.putExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
         intntOnEdit.putExtra((String) getResources().getText(R.string.Extras_Key_Is_First_Edit_Mode), false);
         intntOnEdit.putExtra((String) getResources().getText(R.string.Extras_Key_Current_Member), _currentMember);

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
      ********************/
 
     ListView locationsListView;
-    Button addButton;
+    ImageButton addButton;
 
 
 
@@ -58,12 +59,13 @@ public class FTFamilyLocationsActivity extends ActionBarActivity {
 
 //        //TODO below
 //        get family id from parent activity
-//        Intent intent = getIntent();
-//        Family family = intent.getParcelableExtra("todo","todo"); //TODO
+        Intent intent = getIntent();
+        Family family = intent.getParcelableExtra(getResources().
+                                                  getString(R.string.Family_Locations_Family_Data));
 //        familyID = family.getFamilyID();
 
         //widgets
-        addButton = (Button) findViewById(R.id.addBtn);
+        addButton = (ImageButton) findViewById(R.id.addBtn);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

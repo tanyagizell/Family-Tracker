@@ -11,7 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,22 +21,20 @@ import java.util.ArrayList;
 
 public class FTFamilyActivity extends FTNotifiableActivity {
     //components for listviews
-    ArrayAdapter<String> m_adptFamilyMembersListAdapter;
-    ArrayAdapter<String> m_adptLocationsListAdapter;
+    ArrayAdapter<FamilyMember> m_adptFamilyMembersListAdapter;
     ArrayList<FamilyMember> m_arrmbrFamilyMembers;
     ArrayList<FTLocation> m_arrlcFamilyLocs;
     //TODO combine context menu for each family member in list -allow editing of family member
     //TODO add family member button opens Family member activity on creation state and opened as open activity for result ,on activityresult will reload the list of family members from db and notify the adapter
     //hooks to controls
-    private Button m_btnAddMember;
-    private Button m_btnAddLocation;
+    private ImageButton m_btnAddMember;
+    private ImageButton m_btnAddLocation;
     private ListView m_lvMembers;
-    private ListView m_lvLocations;
     private EditText m_edtFamilyName;
     private Button m_btnConfirmChanges;
     private Family m_fmlCurrentFamily;
 
-    private boolean m_blnIsFamilyCreation;
+    private boolean m_blnIsFamilyCreation ;
     private boolean m_blnIsFirstSaveCommited;
 
     //variable for closing sequence
@@ -46,24 +46,33 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ftfamily);
         m_blnIsOpeningEditActivity = false;
-        m_btnAddMember = (Button) findViewById(R.id.addMemberBtn);
-        m_btnAddLocation = (Button) findViewById(R.id.btnAddFamilyLoc);
-        m_lvLocations = (ListView) findViewById(R.id.lvFamilyLocations);
+        m_btnAddMember = (ImageButton) findViewById(R.id.addMemberBtn);
+        m_btnAddLocation = (ImageButton) findViewById(R.id.btnAddFamilyLoc);
         m_lvMembers = (ListView) findViewById(R.id.familyMemberList);
         m_edtFamilyName = (EditText) findViewById(R.id.familyNameEditTxt);
         m_btnConfirmChanges = (Button) findViewById(R.id.okFamilyButton);
-        setContentView(R.layout.activity_ftfamily);
+        if (m_dsActivityDataAccess == null)
+        {
+            m_dsActivityDataAccess = new FTDataSource(this);
+        }
         Intent intntCurrActivityIntent = getIntent();
-        m_blnIsFamilyCreation = false;
+        m_blnIsFamilyCreation = true;
         m_fmlCurrentFamily = null;
         if (intntCurrActivityIntent.hasExtra(getResources().getString(R.string.Extras_Key_Family))) {
-            m_fmlCurrentFamily = intntCurrActivityIntent.getParcelableExtra(String.valueOf(R.string.Extras_Key_Family));
-            m_blnIsFamilyCreation = true;
+            m_fmlCurrentFamily = intntCurrActivityIntent.getParcelableExtra(getResources().getString(R.string.Extras_Key_Family));
+            m_blnIsFamilyCreation = false;
             m_blnIsFirstSaveCommited = false;
             LoadDataFromDB();
+            ((TextView)findViewById(R.id.txtFamilyHeader)).setText("Edit Family");
+            m_edtFamilyName.setText(m_fmlCurrentFamily.getfamilyName());
         }
         m_edtFamilyName.setEnabled(m_blnIsFamilyCreation);
+        if (m_blnIsFamilyCreation)
+            m_edtFamilyName.setFocusableInTouchMode(m_blnIsFamilyCreation);
+        else
+            m_edtFamilyName.setFocusable(m_blnIsFamilyCreation);
         m_btnConfirmChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,34 +83,26 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         m_btnAddMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OpenEditableActivityOnCondition(true);
+                OpenEditableActivityOnCondition(false);
             }
         });
         m_btnAddLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OpenEditableActivityOnCondition(false);
+                OpenEditableActivityOnCondition(true);
             }
         });
         m_lvMembers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                FamilyMember fmSelectedMember = (FamilyMember) adapterView.getSelectedItem();
+                FamilyMember fmSelectedMember = m_arrmbrFamilyMembers.get(i);
                 OpenFTFamilyMemberActivity(fmSelectedMember);
             }
         });
-
-        m_lvLocations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-        });
-
     }
 
     private void OpenEditableActivityOnCondition(boolean p_blnIsAddLocation) {
-        if (m_fmlCurrentFamily == null && !IsFamilyNameFieldFilled()) {
+        if (m_fmlCurrentFamily == null && !IsFamilyNameFieldEmpty()) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.family_activity_must_provide_family_name), Toast.LENGTH_LONG).show();
         } else {
             m_blnIsOpeningEditActivity = true;
@@ -111,7 +112,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
                 m_fmlCurrentFamily = new Family(strInputFamilyName, nFamilyId);
             }
             if (p_blnIsAddLocation) {
-                OpenFTLocationActivity();
+                OpenFTFamilyLocationsActivity();
             } else {
                 OpenFTFamilyMemberActivity(null);
             }
@@ -120,7 +121,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     }
 
     private void OpenFTFamilyMemberActivity(FamilyMember fmSelectedMember) {
-        Intent intntCreateMember = new Intent(getApplicationContext(), FTFamilyMemberActivity.class);
+        Intent intntCreateMember = new Intent(this, FTFamilyMemberActivity.class);
         if (fmSelectedMember == null) {
             intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Is_Edit_Mode), true);
             intntCreateMember.putExtra((String) getResources().getText(R.string.Extras_Key_Is_First_Edit_Mode), true);
@@ -131,48 +132,35 @@ public class FTFamilyActivity extends FTNotifiableActivity {
 
         }
         //TODO when i will work on opening elements from the list ,should provide ability to set other extras
-        getApplicationContext().startActivity(intntCreateMember);
+        startActivity(intntCreateMember);
     }
 
-    private void OpenFTLocationActivity() {
+    private void OpenFTFamilyLocationsActivity() {
+        Intent intntFamilyLocationsWindow = new Intent(this,FTFamilyLocationsActivity.class);
+        intntFamilyLocationsWindow.putExtra(getResources().
+                                            getString(R.string.Family_Locations_Family_Data),m_fmlCurrentFamily);
+        startActivity(intntFamilyLocationsWindow);
 
     }
 
-    @Override
-    public void onBackPressed() {
-        OnUserRequestToLeave();
-        super.onBackPressed();
-    }
 
     private void OnUserRequestToLeave() {
         CheckIfUserWantsToLeave();
-        if (m_blnShouldContinueClosing) {
-            CheckIfAllDataInserted();
-        }
-        m_dsActivityDataAccess.OpenToWrite();
-        if (m_blnIsFamilyCreation && !m_blnIsFirstSaveCommited) {
-            m_dsActivityDataAccess.InsertFamilyToDB(m_edtFamilyName.getText().toString());
-        } else {
-            if (!IsFamilyNameFieldFilled()) {
-                m_fmlCurrentFamily.setFamilyName(m_edtFamilyName.getText().toString());
-                m_dsActivityDataAccess.UpdateFamily(m_fmlCurrentFamily);
-            }
-        }
-        m_dsActivityDataAccess.close();
-        finish();
     }
 
-    private boolean IsFamilyNameFieldFilled() {
+    /*
+     * Checks if the family name field is emtpy
+     */
+    private boolean IsFamilyNameFieldEmpty() {
         return m_edtFamilyName.getText().toString().equals("");
     }
 
     private void CheckIfAllDataInserted() {
-        if (IsFamilyNameFieldFilled()) {
+        if (IsFamilyNameFieldEmpty()) {
             if (m_blnIsFamilyCreation) {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.family_activity_error_name_not_provided), Toast.LENGTH_LONG).show();
-                m_blnShouldContinueClosing = false;
             } else {
-                AlertDialog.Builder alrtbldShouldExitWithoutEdit = new AlertDialog.Builder(getApplicationContext()).setIcon(android.R.drawable.ic_dialog_alert);
+                AlertDialog.Builder alrtbldShouldExitWithoutEdit = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert);
                 alrtbldShouldExitWithoutEdit.setTitle(R.string.confirm_editable_activity_exit_without_change_title);
                 alrtbldShouldExitWithoutEdit.setMessage(R.string.confirm_editable_activity_exit_without_change_message);
                 alrtbldShouldExitWithoutEdit.setPositiveButton(R.string.save_confirmation_ok_text, new DialogInterface.OnClickListener() {
@@ -181,7 +169,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //Stop the activity
-                        m_blnShouldContinueClosing = true;
+                        finish();
                     }
 
                 });
@@ -189,11 +177,25 @@ public class FTFamilyActivity extends FTNotifiableActivity {
                 alrtbldShouldExitWithoutEdit.show();
             }
         }
+        else
+        {
+            m_dsActivityDataAccess.OpenToWrite();
+            if (m_blnIsFamilyCreation && !m_blnIsFirstSaveCommited) {
+                m_dsActivityDataAccess.InsertFamilyToDB(m_edtFamilyName.getText().toString());
+            } else {
+                if (!IsFamilyNameFieldEmpty()) {
+                    m_fmlCurrentFamily.setFamilyName(m_edtFamilyName.getText().toString());
+                    m_dsActivityDataAccess.UpdateFamily(m_fmlCurrentFamily);
+                }
+            }
+            m_dsActivityDataAccess.close();
+            finish();
+        }
     }
 
     private void CheckIfUserWantsToLeave() {
         m_blnShouldContinueClosing = false;
-        AlertDialog.Builder alrtbldConfirm = new AlertDialog.Builder(getApplicationContext()).setIcon(android.R.drawable.ic_dialog_alert);
+        AlertDialog.Builder alrtbldConfirm = new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert);
         alrtbldConfirm.setTitle(R.string.confirm_editable_activity_exit_title);
         alrtbldConfirm.setMessage(R.string.confirm_editable_activity_exit_message);
         alrtbldConfirm.setPositiveButton(R.string.save_confirmation_ok_text, new DialogInterface.OnClickListener() {
@@ -201,8 +203,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                //Stop the activity
-                m_blnShouldContinueClosing = true;
+                CheckIfAllDataInserted();
             }
 
         });
@@ -217,20 +218,27 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     private void LoadDataFromDB() {
         m_arrmbrFamilyMembers = new ArrayList<>();
         m_arrlcFamilyLocs = new ArrayList<>();
-        LoadDataAndUpdateDisplay(m_lvMembers, m_adptFamilyMembersListAdapter, m_arrmbrFamilyMembers, true);
-        LoadDataAndUpdateDisplay(m_lvLocations, m_adptLocationsListAdapter, m_arrlcFamilyLocs, false);
+        m_dsActivityDataAccess.OpenToRead();
+        m_arrmbrFamilyMembers = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
+        m_dsActivityDataAccess.close();
+        //LoadDataAndUpdateDisplay(m_lvMembers, m_adptFamilyMembersListAdapter, m_arrmbrFamilyMembers, true);
+        m_adptFamilyMembersListAdapter = new ArrayAdapter<FamilyMember>(this,
+                            R.layout.ft_simple_list_item_typed_array, R.id.tvListItemControl, m_arrmbrFamilyMembers);
+        m_lvMembers.setAdapter(m_adptFamilyMembersListAdapter);
     }
 
-    private void LoadDataAndUpdateDisplay(ListView p_lvUiCompToUpdate, ArrayAdapter<String> p_adptToUpdateDisplay, ArrayList p_arrToLoadDataTo, boolean p_blnIsFromFamilyMembers) {
-        if (p_blnIsFromFamilyMembers) {
-            p_arrToLoadDataTo = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
-        } else {
-            p_arrToLoadDataTo = m_dsActivityDataAccess.GetLocationsByFamily(m_fmlCurrentFamily.getFamilyID());
-        }
-        p_adptToUpdateDisplay = new ArrayAdapter<String>(getApplicationContext(), R.layout.ft_simple_list_item_typed_array, R.id.tvListItemControl, p_arrToLoadDataTo);
-        p_lvUiCompToUpdate.setAdapter(p_adptToUpdateDisplay);
-
-    }
+//    private void LoadDataAndUpdateDisplay(ListView p_lvUiCompToUpdate, ArrayAdapter<String> p_adptToUpdateDisplay, ArrayList p_arrToLoadDataTo, boolean p_blnIsFromFamilyMembers) {
+//        m_dsActivityDataAccess.OpenToRead();
+//        if (p_blnIsFromFamilyMembers) {
+//            p_arrToLoadDataTo = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
+//        } else {
+//            p_arrToLoadDataTo = m_dsActivityDataAccess.GetLocationsByFamily(m_fmlCurrentFamily.getFamilyID());
+//        }
+//        m_dsActivityDataAccess.close();
+//        p_adptToUpdateDisplay = new ArrayAdapter<String>(getApplicationContext(), R.layout.ft_simple_list_item_typed_array, R.id.tvListItemControl, p_arrToLoadDataTo);
+//        p_lvUiCompToUpdate.setAdapter(p_adptToUpdateDisplay);
+//
+//    }
 
 
     @Override
@@ -261,11 +269,10 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         if (m_blnIsOpeningEditActivity) {
             m_blnIsOpeningEditActivity = false;
             m_dsActivityDataAccess.OpenToRead();
-            m_arrmbrFamilyMembers = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
-            m_arrlcFamilyLocs = m_dsActivityDataAccess.GetLocationsByFamily(m_fmlCurrentFamily.getFamilyID());
+            m_arrmbrFamilyMembers.clear();
+            m_arrmbrFamilyMembers.addAll(m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID()));
             m_dsActivityDataAccess.close();
             m_adptFamilyMembersListAdapter.notifyDataSetChanged();
-            m_adptLocationsListAdapter.notifyDataSetChanged();
         }
 
     }

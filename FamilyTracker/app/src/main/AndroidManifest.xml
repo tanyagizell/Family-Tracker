@@ -85,7 +85,8 @@ zz
 
         <activity
             android:name=".FTLocationActivity"
-            android:label="@string/title_activity_ftlocation" >
+            android:label="@string/title_activity_ftlocation"
+            android:windowSoftInputMode="adjustPan">
 
         </activity>
 
@@ -148,7 +149,8 @@ zz
         <activity
             android:name=".FTFamilyActivity"
             android:label="@string/title_activity_ftfamily"
-            android:parentActivityName=".FTWelcomeActivity" >
+            android:parentActivityName=".FTWelcomeActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
