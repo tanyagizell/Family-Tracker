@@ -7,30 +7,47 @@
     android:orientation="vertical"
     tools:context="il.ac.huji.familytracker.FTFamilyLocationsActivity">
 
-    <TextView android:text="Family Locations"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-
-        android:textSize="25dp"
         android:layout_weight="1"
-    />
+        android:background="#FFFFCC">
 
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:src="@drawable/ic_globe" />
+
+        <TextView android:text="Family Locations"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:background="#FFFFCC"
+            android:gravity="left|center"
+            android:textSize="25dp"
+            android:layout_weight="8"
+
+        />
+    </LinearLayout>
 
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:id="@+id/locationsListView"
-        android:layout_weight="5"
+        android:layout_weight="6.5"
     />
 
 
-    <Button
+
+    <ImageButton
+        android:id="@+id/addBtn"
+        android:src="@drawable/ic_add_location"
+        android:background="#FFFFCC"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:textSize="20dp"
-        android:text="+"
-        android:id="@+id/addBtn"
     />
 
 

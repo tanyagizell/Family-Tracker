@@ -68,6 +68,8 @@ public class FTLocation implements Parcelable {
         return m_strAddr;
     }
 
+    public int getFamilyId(){return m_FamilyId;}
+
     public void setLocationAddr(String Address) {
         m_strAddr = Address;
     }

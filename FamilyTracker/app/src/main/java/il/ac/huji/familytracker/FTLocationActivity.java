@@ -17,11 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +53,8 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
     ArrayList<FamilyMember> followersList; //followers list
     ArrayList<String> followerNamesList;
     ArrayList<FamilyMember> familyMembers;
+    ArrayList<FamilyMember> candidates;
+    ArrayList<String> candidateNames;
     ArrayAdapter<String> followerAdapter;
 
     LatLng addrLatLng;
@@ -63,7 +67,7 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
     /*********************
      ***** Widgets ******
      ********************/
-    Button addBtn; //adding new followers
+    ImageButton addBtn; //adding new followers
     Button mapViewBtn; //Button to open map view for the location
     Button searchBtn;
     Button okBtn;
@@ -76,23 +80,15 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ftlocation);
 
-        //TODO get family id
-
-
         //get location  locations activity
-//        Intent intent = getIntent();
-//        String message = intent.getStringExtra(FTFamilyLocationsActivity.EXTRA_MESSAGE);
-//        int locID = Integer.valueOf(message);
-
-        String temploc ="";
-        location = new FTLocation(temploc,temploc,temploc,0,0);
+        Intent intent = getIntent();
+        location = intent.getParcelableExtra(FTFamilyLocationsActivity.LOCATION_MESSAGE);
+        familyID = location.getFamilyId();
 
 
         dataSrc = new FTDataSource(this);
         dataSrc.OpenToRead();
         familyMembers = dataSrc.GetFamilyMembersFromDB(familyID);
-
-
 
         /*** Widgets ***/
         //followers list
@@ -100,7 +96,31 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         followersList = dataSrc.GetFamilyMembersRegisteredForLoc(location.getID());
         dataSrc.close();
 
+        candidates = new ArrayList<FamilyMember>();
+        candidateNames = new ArrayList<String>();
+
+        for (int i = 0; i < familyMembers.size(); i++){
+            boolean validCandidate = true;
+            for (int j = 0; j < followersList.size(); j++){
+                if (familyMembers.get(i).getMemberId() == followersList.get(j).getMemberId()){
+                    validCandidate = false;
+                    break;
+                }
+            }
+            if (validCandidate){
+                candidates.add(familyMembers.get(i));
+            }
+        }
+
+        for (int i = 0; i < candidates.size(); i++){
+            candidateNames.add(candidates.get(i).getName());
+        }
+
+
         followerNamesList = new ArrayList<String>();
+        for (int i =0; i< followersList.size();i++){
+            followerNamesList.add(followersList.get(i).getName());
+        }
 
         followerListView = (ListView) findViewById(R.id.followersListView);
         followerAdapter=new ArrayAdapter<String>(this,
@@ -140,11 +160,13 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
 
         //add button
-        addBtn = (Button) findViewById(R.id.addFollowerBtn);
+        addBtn = (ImageButton) findViewById(R.id.addFollowerBtn);
         addBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                showDialog(v);
+                if (candidates.size()!=0)
+                  showDialog(v);
+                else
+                    Toast.makeText(FTLocationActivity.this,"No family members to add",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -156,9 +178,18 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         ACtxtView.setAdapter(new FT_placesAutoComplete.GooglePlacesAutocompleteAdapter(this, R.layout.list_item));
         ACtxtView.setOnItemClickListener(autoComplete);
 
+        //update fields if necessary
+        updateFields();
 
     }
 
+    private void updateFields() {
+
+        if (!location.getLocationName().isEmpty()) {
+            locNameEdtText.setText(location.getLocationName());
+            ACtxtView.setText(location.getLocationAddr());
+        }
+    }
 
 
     @Override
@@ -185,16 +216,11 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
     public void showDialog(View v){
 
-
-        ArrayList<String> familyMemberNames = new ArrayList<String>();
-        for(int i=0; i<familyMembers.size();i++){
-            familyMemberNames.add(familyMembers.get(i).getName());
-        }
         //copy family member names
         FragmentManager manager = getFragmentManager();
 
         FTDialogFragment dialog = new FTDialogFragment();
-        dialog.setItemsList(familyMemberNames);
+        dialog.setItemsList(candidateNames);
         dialog.show(manager, "dialog");
     }
 
@@ -250,6 +276,13 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
         return latLng;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(FTFamilyLocationsActivity.LOCATION_MESSAGE, location);
+        setResult(RESULT_CANCELED,returnIntent);
+        super.onBackPressed();
+    }
 
     public void sendLocation(View v){
         String locName = locNameEdtText.getText().toString();
@@ -265,10 +298,7 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
             setResult(RESULT_OK,returnIntent);
         }
 
-
-
         finish();
-
     }
 
     @Override
@@ -277,12 +307,16 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
         //TODO send notification to create geofence
 
-        followersList.add(familyMembers.get(position)); //add follower to list
-        followerNamesList.add(familyMembers.get(position).getName());
+        followersList.add(candidates.get(position)); //add follower to list
+        followerNamesList.add(candidateNames.get(position));
+
         followerAdapter.notifyDataSetChanged(); //notify adapter
         dataSrc.OpenToWrite();
-        dataSrc.InsertMemberRegistrationToLocation(location.getID(),familyMembers.get(position).getMemberId());
+        dataSrc.InsertMemberRegistrationToLocation(location.getID(),candidates.get(position).getMemberId());
         dataSrc.close();
+
+        candidateNames.remove(position);
+        candidates.remove(position);
     }
 
 

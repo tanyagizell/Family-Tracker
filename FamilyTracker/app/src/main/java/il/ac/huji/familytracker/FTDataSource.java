@@ -327,6 +327,17 @@ public class FTDataSource {
         return arrlstlcQueryRes;
     }
 
+    public void UpdateLocationData(FTLocation p_objLocToUpdate)
+    {
+        ContentValues Values = new ContentValues();
+        String[] arrstrUpdateKeyArgs = { Integer.toString(p_objLocToUpdate.getID())};
+        Values.put(FTDBHelper.PLACES_COLUMN_COORD, p_objLocToUpdate.getLocationCoordinates());
+        Values.put(FTDBHelper.PLACES_COLUMN_NAME, p_objLocToUpdate.getLocationName());
+        Values.put(FTDBHelper.PLACES_COLUMN_PLACE_ADDRESS, p_objLocToUpdate.getLocationAddr());
+
+        _db.update(FTDBHelper.PLACES_TABLE_NAME, Values, String.format(SINGLE_COLUMN_VALUE_CONDITION,FTDBHelper.PLACES_COLUMN_PLACE_ID), arrstrUpdateKeyArgs);
+    }
+
     //General use private methods
     private ArrayList<String> ProvideWithDeleteComponents(ArrayList<Integer> arrnMemberIdsToNotify, int p_nLocId) {
         ArrayList<String> arrstrRetVal = new ArrayList<>();
@@ -357,7 +368,7 @@ public class FTDataSource {
 
     public ArrayList<FamilyMember> GetFamilyMembersRegisteredForLoc(int p_nLocId) {
         ArrayList<Integer> arrnReqMembersIds = GetIdsOfMembersRegisteredForLoc(p_nLocId);
-        return GetMembersByIds(arrnReqMembersIds);
+        return (arrnReqMembersIds.size() == 0)? new ArrayList<FamilyMember>(): GetMembersByIds(arrnReqMembersIds);
     }
 
     public String getLocNameByFamily(int familyId, String strLatLng) {

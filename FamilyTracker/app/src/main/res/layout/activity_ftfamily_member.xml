@@ -95,7 +95,6 @@
             android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-            android:text="default"
          />
         </LinearLayout>
 
@@ -116,7 +115,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
                 android:inputType="phone"
-            android:text="default"
         />
         </LinearLayout>
 
@@ -136,7 +134,6 @@
            android:id="@+id/email_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="default"
         />
         </LinearLayout>
     </LinearLayout>
