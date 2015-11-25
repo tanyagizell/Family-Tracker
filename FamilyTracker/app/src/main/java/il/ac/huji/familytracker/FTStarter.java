@@ -27,14 +27,14 @@ public class FTStarter extends Application{
     public static Context _context;
     FTInAppBroadcastReceiver m_pbrInAppReceiver;
     FTDataSource m_dsCreationTimeDataAccess;
-    private Activity m_aCurrentActivity = null;
+    private Context m_aCurrentActivity = null;
     private boolean m_blnIsInAppReceiverOn;
 
     public static Context getAppContext() {
         return FTStarter._context;
     }
 
-    public Activity getCurrentActivity() {
+    public Context getCurrentActivity() {
         return m_aCurrentActivity;
     }
 
@@ -129,7 +129,8 @@ public class FTStarter extends Application{
                             acLogWindowAccess.m_dsActivityDataAccess = new FTDataSource(getApplicationContext());
                         }
                         acLogWindowAccess.m_dsActivityDataAccess.OpenToRead();
-                        acLogWindowAccess.m_arrNotifications = acLogWindowAccess.m_dsActivityDataAccess.GeteNotificationsItemsFromDB();
+                        acLogWindowAccess.m_arrNotifications.clear();
+                        acLogWindowAccess.m_arrNotifications.addAll(acLogWindowAccess.m_dsActivityDataAccess.GeteNotificationsItemsFromDB());
                         acLogWindowAccess.m_dsActivityDataAccess.close();
                         acLogWindowAccess._logEntriesAdapter.notifyDataSetChanged();
                     } else if (IsInGivenActivity(FTWelcomeActivity.class)) {
@@ -139,7 +140,8 @@ public class FTStarter extends Application{
                             acWelcomeWindowAccess.m_dsActivityDataAccess = new FTDataSource(getApplicationContext());
                         }
                         acWelcomeWindowAccess.m_dsActivityDataAccess.OpenToRead();
-                        acWelcomeWindowAccess.m_arrntfMostRecentNotifications = acWelcomeWindowAccess.m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(acWelcomeWindowAccess.MAX_NOTIF_IN_WELCOME);
+                        acWelcomeWindowAccess.m_arrntfMostRecentNotifications.clear();
+                        acWelcomeWindowAccess.m_arrntfMostRecentNotifications.addAll(acWelcomeWindowAccess.m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(acWelcomeWindowAccess.MAX_NOTIF_IN_WELCOME));
                         acWelcomeWindowAccess.m_dsActivityDataAccess.close();
                         acWelcomeWindowAccess.m_lgadptLogPeekAdapter.notifyDataSetChanged();
                     }
@@ -153,7 +155,7 @@ public class FTStarter extends Application{
                         String message = dblCurrLat + "," + dblCurrLang;
                         Intent intent = new Intent(m_appFamTrackerRelator.getCurrentActivity(), FTMapsActivity.class);
                         intent.putExtra(FTLocationActivity.EXTRA_MESSAGE, message);
-                        startActivity(intent);
+                        m_appFamTrackerRelator.getCurrentActivity().startActivity(intent);
                     }
 
                     break;

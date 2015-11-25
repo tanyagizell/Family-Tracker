@@ -38,6 +38,8 @@ public class FTNotificationParser {
     public static final String TIMESTAMP_TITLE = "timestamp";
     public static final String GEOFENCE_ENTER = "ENTER";
     public static final String GEOFENCE_EXIT = "EXIT";
+    public static final String QUERY_FIELD = "DeviceNotificationId";
+
 
 
     //parsing indices
@@ -73,13 +75,13 @@ public class FTNotificationParser {
         ArrayList<Object> arrObjArgs = null;
         switch (enmNotifType) {
             case CREATE_GEOFENCE:
-                parseCreateGeofence(jsonObject);
+                parseCreateGeofence(jsonObject,p_dsDataRetriever);
                 break;
             case GEOFENCE_ALERT:
                 arrObjArgs = parseGeofenceAlert(jsonObject, p_dsDataRetriever);
                 break;
             case CURRENT_LOC_REQUEST:
-                parseCurrentLocRequest(jsonObject);
+                parseCurrentLocRequest(jsonObject,p_dsDataRetriever);
                 break;
             case CURRENT_LOC_RESPONSE:
                 arrObjArgs = parseCurrentLocResponse(jsonObject);
@@ -95,11 +97,7 @@ public class FTNotificationParser {
     *  "alert":"CREATE_GEOFENCE"
     *  "location":"lat,lang"
     * */
-    private static void parseCreateGeofence(JSONObject jsonObject) {
-        //TODO finish
-        //TODO check if it is better , design wise ,to extract the actions taken here to a place intended for operations
-        //and instead use this method to return operatable values
-
+    public static void parseCreateGeofence(JSONObject jsonObject, FTDataSource m_ds) {
 
         //get access to geofence manager
         FTGeofenceManager GFManager = FTGeofenceManager.getInstance();
@@ -122,7 +120,10 @@ public class FTNotificationParser {
 
             LocationServices.GeofencingApi.addGeofences(googleApiClient, gr, pi);
 
-
+            //update who is registered
+            m_ds.OpenToWrite();
+            m_ds.updateGeofenceToCreator(latlng,m_ds.GetCurPhone());
+            m_ds.close();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -168,7 +169,7 @@ public class FTNotificationParser {
     * "alert":"CURRENT_LOC_REQUEST"
     * "sender_phone":"phone number"
     * */
-    public static void parseCurrentLocRequest(JSONObject jsonObject) {
+    public static void parseCurrentLocRequest(JSONObject jsonObject, FTDataSource p_dsDataRetriever) {
         //TODO handle custom events
 
         String requestingNumber = "";
@@ -181,8 +182,9 @@ public class FTNotificationParser {
         String locStr = getLastLocation();
 
 
-
-        String currentNumber = ""; //TODO get phone number from db
+        p_dsDataRetriever.OpenToWrite();
+        String currentNumber = p_dsDataRetriever.GetCurPhone();
+        p_dsDataRetriever.close();
         try {
 
             //build a response with the structure
@@ -197,8 +199,9 @@ public class FTNotificationParser {
             respObj.put(COORDINATES_TITLE,locStr);
             respObj.put(PHONE_NUMBER_TITLE,currentNumber);
             ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
-            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,requestingNumber);
+            SendToRequestingQuery.whereEqualTo(QUERY_FIELD,requestingNumber);
             ParsePush SentParseObject = new ParsePush();
+            SentParseObject.setQuery(SendToRequestingQuery);
             SentParseObject.setData(respObj);
             SentParseObject.sendInBackground();
 
@@ -225,20 +228,12 @@ public class FTNotificationParser {
         String strPhone = null;
         try {
             arrobjRetVal = new ArrayList<>();
-            boolean blnIsActionValid = jsonObject.getBoolean("ReturnValid");
-            arrobjRetVal.add(blnIsActionValid);
-            if (blnIsActionValid) {
-                ArrayList<Double> arrCoords = ParseLocStringToCoords(jsonObject);
-                Double dblLat = arrCoords.get(LAT_INDEX);
-                Double dblLng = arrCoords.get(LNG_INDEX);
-                arrobjRetVal.add(dblLat);
-                arrobjRetVal.add(dblLng);
-                arrobjRetVal.add(jsonObject.getString("sender_phone"));
-
-                //open map
-
-
-            }
+            ArrayList<Double> arrCoords = ParseLocStringToCoords(jsonObject);
+            Double dblLat = arrCoords.get(LAT_INDEX);
+            Double dblLng = arrCoords.get(LNG_INDEX);
+            arrobjRetVal.add(dblLat);
+            arrobjRetVal.add(dblLng);
+            arrobjRetVal.add(jsonObject.getString("sender_phone"));
         } catch (JSONException e) {
             e.printStackTrace();
         } finally {

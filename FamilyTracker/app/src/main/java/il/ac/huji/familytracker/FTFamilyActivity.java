@@ -60,6 +60,7 @@ public class FTFamilyActivity extends FTNotifiableActivity {
         Intent intntCurrActivityIntent = getIntent();
         m_blnIsFamilyCreation = true;
         m_fmlCurrentFamily = null;
+        m_arrmbrFamilyMembers = new ArrayList<>();
         if (intntCurrActivityIntent.hasExtra(getResources().getString(R.string.Extras_Key_Family))) {
             m_fmlCurrentFamily = intntCurrActivityIntent.getParcelableExtra(getResources().getString(R.string.Extras_Key_Family));
             m_blnIsFamilyCreation = false;
@@ -102,13 +103,15 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     }
 
     private void OpenEditableActivityOnCondition(boolean p_blnIsAddLocation) {
-        if (m_fmlCurrentFamily == null && !IsFamilyNameFieldEmpty()) {
+        if (m_fmlCurrentFamily == null && IsFamilyNameFieldEmpty()) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.family_activity_must_provide_family_name), Toast.LENGTH_LONG).show();
         } else {
             m_blnIsOpeningEditActivity = true;
             if (m_fmlCurrentFamily == null) {
                 String strInputFamilyName = m_edtFamilyName.getText().toString();
+                m_dsActivityDataAccess.OpenToWrite();
                 int nFamilyId = m_dsActivityDataAccess.InsertFamilyToDB(strInputFamilyName);
+                m_dsActivityDataAccess.close();
                 m_fmlCurrentFamily = new Family(strInputFamilyName, nFamilyId);
             }
             if (p_blnIsAddLocation) {
@@ -216,8 +219,6 @@ public class FTFamilyActivity extends FTNotifiableActivity {
     }
 
     private void LoadDataFromDB() {
-        m_arrmbrFamilyMembers = new ArrayList<>();
-        m_arrlcFamilyLocs = new ArrayList<>();
         m_dsActivityDataAccess.OpenToRead();
         m_arrmbrFamilyMembers = m_dsActivityDataAccess.GetFamilyMembersFromDB(m_fmlCurrentFamily.getFamilyID());
         m_dsActivityDataAccess.close();

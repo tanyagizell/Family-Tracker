@@ -131,7 +131,7 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
         m_arrfmlFamilies = m_dsActivityDataAccess.GetFamiliesFromDB();
         m_arrntfMostRecentNotifications = m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME);
         m_dsActivityDataAccess.close();
-        m_adptFamiliesAdapter = new ArrayAdapter<Family>(this, android.R.layout.simple_list_item_1, m_arrfmlFamilies);
+        m_adptFamiliesAdapter = new ArrayAdapter<Family>(this, R.layout.ft_simple_list_item_typed_array, m_arrfmlFamilies);
         m_lvFamilies.setAdapter(m_adptFamiliesAdapter);
         m_lgadptLogPeekAdapter = new FTLogAdapter(this, m_arrntfMostRecentNotifications);
         m_lvLogPeek.setAdapter(m_lgadptLogPeekAdapter);
@@ -175,12 +175,24 @@ public class FTWelcomeActivity extends FTNotifiableActivity {
     protected void onResume() {
         super.onResume();
         m_dsActivityDataAccess.OpenToRead();
-        m_arrfmlFamilies.clear();
-        m_arrfmlFamilies.addAll(m_dsActivityDataAccess.GetFamiliesFromDB());
-        m_arrntfMostRecentNotifications.clear();
-        m_arrntfMostRecentNotifications.addAll(m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME));
+        if(m_arrfmlFamilies != null)
+        {
+            m_arrfmlFamilies.clear();
+            m_arrfmlFamilies.addAll(m_dsActivityDataAccess.GetFamiliesFromDB());
+        }
+        if(m_arrntfMostRecentNotifications != null)
+        {
+            m_arrntfMostRecentNotifications.clear();
+            m_arrntfMostRecentNotifications.addAll(m_dsActivityDataAccess.GeteMostRecentRequiredNumberOfNotifications(MAX_NOTIF_IN_WELCOME));
+        }
         m_dsActivityDataAccess.close();
-        m_adptFamiliesAdapter.notifyDataSetChanged();
-        m_lgadptLogPeekAdapter.notifyDataSetChanged();
+        if(m_adptFamiliesAdapter != null)
+        {
+            m_adptFamiliesAdapter.notifyDataSetChanged();
+        }
+        if(m_lgadptLogPeekAdapter != null)
+        {
+            m_lgadptLogPeekAdapter.notifyDataSetChanged();
+        }
     }
 }

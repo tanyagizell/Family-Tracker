@@ -9,11 +9,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".FTWelcomeActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight=".5"
-        android:text="@string/hello_world" />
 
     <LinearLayout
         android:id="@+id/lnrExistingFamiliesGroup"
@@ -25,10 +20,11 @@
         <TextView
             android:text="@string/Welcome_Families_List"
             android:id="@+id/tvFamiliesViewHeader"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight=".5"
-            android:textSize="20dp"/>
+            android:layout_weight="1"
+            android:background="#FFFFCC"
+            android:textSize="30dp"/>
 
         <ListView
             android:id="@+id/lvFamilies"

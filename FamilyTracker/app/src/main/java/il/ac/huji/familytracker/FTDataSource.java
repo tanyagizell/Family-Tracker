@@ -488,6 +488,28 @@ public class FTDataSource {
         long id = _db.insert(FTDBHelper.AUTH_USER_TABLE_NAME, null, values);
     }
 
+    public void updateGeofenceToCreator(String latlng, String s) {
+        ContentValues values = new ContentValues();
+        values.put(FTDBHelper.GEOFENCE_MAPPING_COLUMN_LATLANG, latlng);
+        values.put(FTDBHelper.GEOFENCE_MAPPING_COLUMN_CREATOR, s);
+// insert the row
+        long id = _db.insert(FTDBHelper.GEOFENCE_MAPPING_TABLE_NAME, null, values);
+    }
+
+    public String GetGeofenceCreator(String LatLang)
+    {
+        ArrayList<String> arrblnRes = new ArrayList<>();
+        String[] arrstrGeofenceLoc = {LatLang};
+        Cursor crsrRes = _db.query(false, FTDBHelper.GEOFENCE_MAPPING_TABLE_NAME, arrstrGeofenceLoc,String.format(SINGLE_COLUMN_VALUE_CONDITION,FTDBHelper.GEOFENCE_MAPPING_COLUMN_LATLANG), arrstrGeofenceLoc, null, null, null, null, null);
+        crsrRes.moveToFirst();
+        while (!crsrRes.isAfterLast()) {
+            arrblnRes.add(crsrRes.getString(crsrRes.getColumnIndex(FTDBHelper.CURR_USER_COLUMN_PHONE)));
+            crsrRes.moveToNext();
+        }
+        crsrRes.close();
+        return arrblnRes.get(0);
+    }
+
     public enum enmUserStatus {
         PARENT, CHILD
     }

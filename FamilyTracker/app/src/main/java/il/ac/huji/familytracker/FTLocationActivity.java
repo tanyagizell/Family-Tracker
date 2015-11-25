@@ -29,6 +29,12 @@ import java.util.Locale;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseAnalytics;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 /*
 * FTLocationActivity
 *
@@ -287,6 +293,9 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
     public void sendLocation(View v){
         String locName = locNameEdtText.getText().toString();
         location.setLocationName(locName);
+        addrLatLng = getLocationFromAddress(location.getLocationAddr());
+        String addressUpdate = addrLatLng.latitude + "," + addrLatLng.longitude;
+        location.setLocationCoordinates(addressUpdate);
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra(FTFamilyLocationsActivity.LOCATION_MESSAGE,location);
@@ -306,6 +315,32 @@ public class FTLocationActivity extends ActionBarActivity implements FTDialogFra
 
 
         //TODO send notification to create geofence
+        dataSrc.OpenToWrite();
+        String currentNumber = dataSrc.GetCurPhone();
+        dataSrc.close();
+        try {
+
+            //build a response with the structure
+            /* *  "alert":"CREATE_GEOFENCE"
+                *  "location":"lat,lang"
+                * */
+
+            //create a Json object the hold the content of the response
+            JSONObject respObj = new JSONObject();
+            respObj.put(FTNotificationParser.NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CREATE_GEOFENCE);
+            respObj.put(FTNotificationParser.COORDINATES_TITLE,location.getLocationCoordinates());
+            respObj.put(FTNotificationParser.PHONE_NUMBER_TITLE,currentNumber);
+            ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
+            SendToRequestingQuery.whereEqualTo(FTNotificationParser.QUERY_FIELD,candidates.get(position).getPhoneNumber());
+            ParsePush SentParseObject = new ParsePush();
+            SentParseObject.setQuery(SendToRequestingQuery);
+            SentParseObject.setData(respObj);
+            SentParseObject.sendInBackground();
+
+            //TODO send notification with result
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         followersList.add(candidates.get(position)); //add follower to list
         followerNamesList.add(candidateNames.get(position));

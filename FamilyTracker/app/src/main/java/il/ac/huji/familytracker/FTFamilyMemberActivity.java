@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
@@ -107,7 +108,6 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
         SetImageToButton();
         if (m_blnIsEditMode) {
             //btnExtendedEditingOpts.setVisibility(Button.INVISIBLE);
-            btnChangeFrontActivity.setVisibility(Button.INVISIBLE);
             btnConfirmChanges.setVisibility(Button.VISIBLE);
             btnChangeFrontActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,26 +158,35 @@ public class FTFamilyMemberActivity extends FTNotifiableActivity {
 
     private void OpenMapHandler(View p_vwCurrentCallbackData) {
         //TODO send request for current location -opening of activity done from onreceive
-        SetActivityToWait();
+        if(!_edtNumber.getText().equals(""))
+        {
+            SetActivityToWait();
         /*create Json object for notification content with the structure:
             * "alert":"CURRENT_LOC_REQUEST"
             * "sender_phone":"phone number"
          */
-        m_dsActivityDataAccess.OpenToWrite();
-        String strCurrPhone = m_dsActivityDataAccess.GetCurPhone();
-        m_dsActivityDataAccess.close();
-        JSONObject jsonObj =new JSONObject();
-        try {
-            jsonObj.put(FTNotificationParser.NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CURRENT_LOC_REQUEST);
-            jsonObj.put(FTNotificationParser.PHONE_NUMBER_TITLE,strCurrPhone);
-            ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
-            SendToRequestingQuery.whereEqualTo(FTStarter.INSTALL_PHONE_NO_FIELD,_currentMember.getPhoneNumber());
-            ParsePush SentParseObject = new ParsePush();
-            SentParseObject.setData(jsonObj);
-            SentParseObject.sendInBackground();
-        } catch (JSONException e) {
-            e.printStackTrace();
+            m_dsActivityDataAccess.OpenToWrite();
+            String strCurrPhone = m_dsActivityDataAccess.GetCurPhone();
+            m_dsActivityDataAccess.close();
+            JSONObject jsonObj =new JSONObject();
+            try {
+                jsonObj.put(FTNotificationParser.NOTIFICATION_TITLE,FTParsedNotification.enmNotificationTypes.CURRENT_LOC_REQUEST);
+                jsonObj.put(FTNotificationParser.PHONE_NUMBER_TITLE,strCurrPhone);
+                ParseQuery SendToRequestingQuery = ParseInstallation.getQuery();
+                SendToRequestingQuery.whereEqualTo(getResources().getString(R.string.PARSE_PHONE_ID),_edtNumber.getText().toString());
+                ParsePush SentParseObject = new ParsePush();
+                SentParseObject.setQuery(SendToRequestingQuery);
+                SentParseObject.setData(jsonObj);
+                SentParseObject.sendInBackground();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+        else
+        {
+            Toast.makeText(this, "Target phone number is required in order to view location",Toast.LENGTH_LONG).show();
+        }
+
         //TODO use intent of map and coordinates from service , or from the user data loaded to activity
     }
 

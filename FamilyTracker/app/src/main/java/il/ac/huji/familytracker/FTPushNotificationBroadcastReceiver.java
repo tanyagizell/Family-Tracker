@@ -8,13 +8,10 @@ import android.support.v4.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Tanyagizell on 25/08/2015.
@@ -51,11 +48,13 @@ public class FTPushNotificationBroadcastReceiver extends ParsePushBroadcastRecei
                     PostNotificationToBar(ntfCurrNotification, context);
                     break;
                 case CURRENT_LOC_REQUEST:
-                    FTNotificationParser.parseCurrentLocRequest(json);
+                    FTNotificationParser.parseCurrentLocRequest(json, m_dsLocalDataAccessor);
+                    break;
+                case CREATE_GEOFENCE:
+                    FTNotificationParser.parseCreateGeofence(json,m_dsLocalDataAccessor);
                     break;
             }
         }
-        super.onPushReceive(context, intent);
 
     }
 

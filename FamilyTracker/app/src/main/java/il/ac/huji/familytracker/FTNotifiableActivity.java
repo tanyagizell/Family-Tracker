@@ -1,6 +1,7 @@
 package il.ac.huji.familytracker;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
@@ -66,7 +67,7 @@ public class FTNotifiableActivity extends ActionBarActivity {
     }
 
     private void clearReferences() {
-        Activity currActivity = m_appMyApp.getCurrentActivity();
+        Context currActivity = m_appMyApp.getCurrentActivity();
         if (currActivity != null && currActivity.equals(this))
             m_appMyApp.setCurrentActivity(null);
     }

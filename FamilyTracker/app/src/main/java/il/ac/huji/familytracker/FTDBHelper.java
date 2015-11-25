@@ -160,6 +160,20 @@ public class FTDBHelper extends SQLiteOpenHelper {
             MEMBER_TO_PLACE_COLUMN_PLACE_ID, PLACES_TABLE_NAME, PLACES_COLUMN_PLACE_ID,
             MEMBER_TO_PLACE_COLUMN_MEMBER_ID, FAMILY_MEMBERS_TABLE_NAME, FAMILY_MEMBERS_COLUMN_MEMBER_ID);
     public static final String[] MEMBER_TO_PLACE_DATA_COLUMNS = {MEMBER_TO_PLACE_COLUMN_REGISTRATION_ID, MEMBER_TO_PLACE_COLUMN_PLACE_ID, MEMBER_TO_PLACE_COLUMN_MEMBER_ID};
+
+    //geofence mapping table constants
+    public static final String GEOFENCE_MAPPING_TABLE_NAME = "geofencemapping";
+    public static final String GEOFENCE_MAPPING_COLUMN_LATLANG = "LAT_LANG";
+    public static final String GEOFENCE_MAPPING_COLUMN_CREATOR = "CREATOR_PHONE";
+    public static final String GEOFENCE_MAPPING_INSERT_COMMAND = String.format("INSERT INTO  %s (%s,%s) VALUES (?,?)", GEOFENCE_MAPPING_TABLE_NAME, GEOFENCE_MAPPING_COLUMN_LATLANG, GEOFENCE_MAPPING_COLUMN_CREATOR);
+    public static final String GEOFENCE_MAPPING_COLUMN_ID = "ID";
+    private final String GEOFENCE_MAPPING_TABLE_CREATION = String.format("CREATE TABLE %s (" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s  TEXT NOT NULL," +
+                    "%s  TEXT NOT NULL);", GEOFENCE_MAPPING_TABLE_NAME,
+            GEOFENCE_MAPPING_COLUMN_ID,
+            GEOFENCE_MAPPING_COLUMN_LATLANG,
+            GEOFENCE_MAPPING_COLUMN_CREATOR);
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "familytracker.db";
 
@@ -177,6 +191,7 @@ public class FTDBHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(PLACES_TABLE_CREATION);
         sqLiteDatabase.execSQL(MEMBER_TO_PLACE_TABLE_CREATION);
         sqLiteDatabase.execSQL(CURR_USER_TABLE_CREATION);
+        sqLiteDatabase.execSQL(GEOFENCE_MAPPING_TABLE_CREATION);
         CreateAndInitAppReqTable(sqLiteDatabase);
 //        super.onCreate();
     }
