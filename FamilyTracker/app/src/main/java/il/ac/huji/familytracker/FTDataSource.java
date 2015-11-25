@@ -374,7 +374,9 @@ public class FTDataSource {
     public String getLocNameByFamily(int familyId, String strLatLng) {
         ArrayList<String> arrReturnItems = new ArrayList<>();
         String[] arrstrWhereArgs = {Integer.toString(familyId), strLatLng};
+        String[] trialargs = {Integer.toString(familyId)};
         String[] arrstrSelectCols = {FTDBHelper.PLACES_COLUMN_NAME};
+        String[] arrAttemptCols = {FTDBHelper.PLACES_COLUMN_COORD};
         Cursor crsrDataRetriever = _db.query(false, FTDBHelper.PLACES_TABLE_NAME, arrstrSelectCols, String.format("%s AND %s", String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_FAMILY), String.format(SINGLE_COLUMN_VALUE_CONDITION, FTDBHelper.PLACES_COLUMN_COORD)), arrstrWhereArgs, null, null, null, null);
         crsrDataRetriever.moveToFirst();
         while (!crsrDataRetriever.isAfterLast()) {
@@ -500,7 +502,9 @@ public class FTDataSource {
     {
         ArrayList<String> arrblnRes = new ArrayList<>();
         String[] arrstrGeofenceLoc = {LatLang};
-        Cursor crsrRes = _db.query(false, FTDBHelper.GEOFENCE_MAPPING_TABLE_NAME, arrstrGeofenceLoc,String.format(SINGLE_COLUMN_VALUE_CONDITION,FTDBHelper.GEOFENCE_MAPPING_COLUMN_LATLANG), arrstrGeofenceLoc, null, null, null, null, null);
+        Cursor crsrRes = _db.query(false, FTDBHelper.GEOFENCE_MAPPING_TABLE_NAME, arrstrGeofenceLoc,
+                String.format(SINGLE_COLUMN_VALUE_CONDITION,FTDBHelper.GEOFENCE_MAPPING_COLUMN_LATLANG),
+                arrstrGeofenceLoc, null, null, null, null);
         crsrRes.moveToFirst();
         while (!crsrRes.isAfterLast()) {
             arrblnRes.add(crsrRes.getString(crsrRes.getColumnIndex(FTDBHelper.CURR_USER_COLUMN_PHONE)));

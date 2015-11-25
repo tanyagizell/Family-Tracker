@@ -144,6 +144,7 @@ public class FTNotificationParser {
         ArrayList<Object> arrobjRetVal = null;
         try {
             if (p_dsDataRetriever != null) {
+                arrobjRetVal = new ArrayList<>();
                 p_dsDataRetriever.OpenToRead();
                 FamilyMember fmNotifSubject = p_dsDataRetriever.GetMemberByPhone(jsonObject.getString("sender_phone"));
                 String strTimeStamp = jsonObject.getString("timestamp");
